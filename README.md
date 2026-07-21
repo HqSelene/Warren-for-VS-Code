@@ -1,29 +1,50 @@
 # Agent Garden
 
-Agent Garden is an attention layer for CLI coding agents running across multiple VS Code windows. It shows which session is working, needs you, is done, or cannot be confirmed—and routes you back to the originating terminal.
+Agent Garden is an attention layer for CLI coding agents running across multiple VS Code windows. It shows which real session is working, needs you, is done, or cannot be confirmed, then routes you back to the originating terminal.
 
 ## Build Week MVP
 
 - Four normalized attention states: Working, Needs You, Done, and Unknown.
-- Cross-window session aggregation over a loopback-only local broker.
+- Real Claude Code Hook and OpenCode Plugin adapters.
+- Cross-window aggregation over a loopback-only local broker.
 - Current-window Claude, Codex, and OpenCode shell-command discovery.
 - Click-to-focus terminal routing.
-- Utility Mode and Garden Mode.
-- Deterministic Demo Mode with no API key or agent account required.
+- Utility Mode, Garden Mode, and a deterministic account-free Demo Mode.
 - Notifications only on meaningful transitions into Needs You or Done.
 
 ## Install a packaged VSIX
 
-1. Download `agent-garden-0.0.1.vsix` from the project release/artifacts.
+1. Download `agent-garden-0.0.1.vsix` from the project release or artifacts.
 2. In VS Code, open **Extensions**.
-3. Select **Views and More Actions (…) → Install from VSIX…**.
+3. Select **Views and More Actions (...) > Install from VSIX...**.
 4. Choose the downloaded file and reload VS Code if prompted.
 5. Open the Agent Garden icon in the Activity Bar.
+
+## Connect real Claude Code and OpenCode sessions
+
+From the VS Code Command Palette, run:
+
+- **Agent Garden: Install Claude Code Adapter**
+- **Agent Garden: Install OpenCode Adapter**
+
+The Claude installer merges Agent Garden command hooks into `~/.claude/settings.json` and creates `settings.json.agent-garden.bak`. The OpenCode installer places a global plugin at `~/.config/opencode/plugins/agent-garden.js`. Both adapters can be removed with their matching uninstall commands.
+
+After installation, reload VS Code and open a **new integrated terminal**, then start `claude` or `opencode`. New terminals inherit a per-window routing ID, which prevents events from another VS Code window being attached to the wrong session. Adapter events contain only state metadata; prompts, tool inputs, terminal output, source code, and credentials are never sent or stored.
+
+Real state mappings include:
+
+- Claude `UserPromptSubmit`/tool events -> Working
+- Claude `PermissionRequest` -> Needs You
+- Claude `Stop` -> Done
+- OpenCode `session.status: busy` -> Working
+- OpenCode `permission.asked`/`question.asked` -> Needs You
+- OpenCode `session.idle` -> Done
+- Claude/OpenCode failures -> Needs You with an error reason
 
 ## Judge-friendly test path
 
 1. Open Agent Garden.
-2. Select **Start Demo**. Three real VS Code terminals are created and registered as demo sessions.
+2. Select **Start Demo**. Three VS Code terminals are created and registered as demo sessions.
 3. Confirm that Working, Needs You, and Done are visible.
 4. Select a session card and verify that its terminal is revealed.
 5. Select **Advance States** to exercise transitions and notifications.
@@ -41,55 +62,27 @@ Requirements:
 
 ```powershell
 npm.cmd install
-npm.cmd run compile
+npm.cmd test
+npm.cmd run package
 ```
 
 Press `F5` in VS Code to launch the Extension Development Host.
 
-Run tests:
-
-```powershell
-npm.cmd test
-```
-
-Package the extension:
-
-```powershell
-npm.cmd run package
-```
-
 ## Supported platforms
 
-The Build Week package is tested on Windows with desktop VS Code. The extension uses only stable VS Code APIs and Node's loopback HTTP server, but macOS, Linux, remote workspaces, and web-based VS Code are not yet part of the supported test matrix.
+The Build Week package is tested on Windows with desktop VS Code. The extension uses stable VS Code APIs and a loopback-only Node HTTP server, but macOS, Linux, remote workspaces, and web-based VS Code are not yet part of the supported test matrix.
 
-## Status confidence
+## Status confidence and limitations
 
-Agent Garden does not pretend that every inferred terminal state is certain:
+- **Confirmed** means an official tool hook/plugin, Demo Adapter, or high-confidence shell event reported the state.
+- **Inferred** means a terminal name or lower-confidence shell event suggests an agent.
+- **Unknown** means the adapter is absent, stale, or the terminal lifecycle cannot establish the state.
 
-- **Confirmed**: a hook, demo adapter, or high-confidence shell-integration event reported the state.
-- **Inferred**: the terminal name or lower-confidence shell event suggests an agent.
-- **Unknown**: the adapter is missing, stale, or the terminal lifecycle cannot establish the state.
-
-The MVP does not persist prompts, terminal output, or source code. The cross-window broker binds only to `127.0.0.1`.
+Codex currently has shell-lifecycle discovery but no runtime adapter in this MVP. Two same-agent terminals launched in the same VS Code window and same working directory can still require a best-recent-session match until they acquire distinct external session IDs. Bringing a background VS Code window to the OS foreground remains platform-dependent.
 
 ## How Codex and GPT-5.6 were used
 
-Codex with GPT-5.6 was used as the primary engineering collaborator for the Build Week implementation. It helped:
-
-- turn the product idea into the four-state attention model;
-- design the normalized session protocol and honest confidence model;
-- implement the TypeScript extension, terminal discovery, loopback broker, and Webview UI;
-- identify VS Code terminal API limitations and keep unsupported claims out of the product;
-- create the deterministic Demo Mode and unit tests;
-- prepare packaging and judge-focused documentation.
-
-The product does not add an unnecessary runtime model call. GPT-5.6 was used to build and reason about the tool itself.
-
-## Known MVP limitations
-
-- Interactive CLI states such as permission prompts require tool-specific hooks for reliable confirmation; generic shell integration cannot see every internal state.
-- Cross-window focus commands are routed to the correct extension instance, but whether the operating system brings a background VS Code window to the foreground is platform-dependent.
-- Closing the broker-owning VS Code window causes a short reconnect while another window becomes broker owner.
+Codex with GPT-5.6 was the primary engineering collaborator. It helped define the honest attention model, validate official Claude Code/OpenCode integration points, implement the TypeScript extension and adapters, build the broker and Webview UI, test real event transport, and prepare judge-focused packaging and documentation. The product does not add an unnecessary runtime model call.
 
 ## License
 

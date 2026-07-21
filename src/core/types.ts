@@ -16,7 +16,30 @@ export interface AgentSession {
   reason?: string;
   confidence: Confidence;
   source: SessionSource;
+  cwd?: string;
+  externalSessionId?: string;
   updatedAt: number;
+}
+
+export interface ExternalAgentEvent {
+  sequence: number;
+  agent: Exclude<AgentKind, 'demo' | 'unknown'>;
+  eventType: string;
+  externalSessionId?: string;
+  targetWindowId?: string;
+  cwd?: string;
+  status?: string;
+  reason?: string;
+  notificationType?: string;
+  toolName?: string;
+  timestamp: number;
+}
+
+export type ExternalAgentEventInput = Omit<ExternalAgentEvent, 'sequence'>;
+
+export interface AgentEventsResponse {
+  events: ExternalAgentEvent[];
+  latestSequence: number;
 }
 
 export interface WindowDescriptor {
@@ -46,4 +69,3 @@ export interface FocusCommand {
   terminalId: string;
   createdAt: number;
 }
-

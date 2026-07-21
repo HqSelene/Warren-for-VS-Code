@@ -3,10 +3,12 @@ import { test } from 'node:test';
 import {
   detectAgent,
   executionEndState,
+  externalEventState,
   shouldNotify,
   sortSessions,
 } from '../src/core/state-machine';
 import type { AgentSession } from '../src/core/types';
+import type { ExternalAgentEvent } from '../src/core/types';
 
 function session(overrides: Partial<AgentSession> = {}): AgentSession {
   return {
@@ -64,3 +66,43 @@ test('notifies only when an existing session transitions to attention or done', 
   assert.equal(shouldNotify(working, session({ state: 'unknown' })), false);
 });
 
+function externalEvent(
+  overrides: Partial<ExternalAgentEvent> = {},
+): ExternalAgentEvent {
+  return {
+    sequence: 1,
+    agent: 'claude',
+    eventType: 'UserPromptSubmit',
+    timestamp: Date.now(),
+    ...overrides,
+  };
+}
+
+test('maps real Claude hook events to attention states', () => {
+  assert.equal(externalEventState(externalEvent())?.state, 'working');
+  assert.deepEqual(
+    externalEventState(externalEvent({ eventType: 'PermissionRequest', toolName: 'Bash' })),
+    { state: 'needsYou', reason: 'Permission required: Bash', confidence: 'confirmed' },
+  );
+  assert.equal(externalEventState(externalEvent({ eventType: 'Stop' }))?.state, 'done');
+  assert.equal(externalEventState(externalEvent({ eventType: 'Notification', notificationType: 'other' })), undefined);
+});
+
+test('maps real OpenCode plugin events to attention states', () => {
+  assert.equal(
+    externalEventState(externalEvent({ agent: 'opencode', eventType: 'session.status', status: 'busy' }))?.state,
+    'working',
+  );
+  assert.equal(
+    externalEventState(externalEvent({ agent: 'opencode', eventType: 'permission.asked' }))?.state,
+    'needsYou',
+  );
+  assert.equal(
+    externalEventState(externalEvent({ agent: 'opencode', eventType: 'session.idle' }))?.state,
+    'done',
+  );
+  assert.equal(
+    externalEventState(externalEvent({ agent: 'opencode', eventType: 'session.error' }))?.state,
+    'needsYou',
+  );
+});

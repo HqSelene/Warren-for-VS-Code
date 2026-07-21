@@ -1,7 +1,9 @@
 import * as http from 'node:http';
 import type {
   AgentSession,
+  AgentEventsResponse,
   BrokerSnapshot,
+  ExternalAgentEvent,
   FocusCommand,
   FocusRequest,
   WindowDescriptor,
@@ -23,6 +25,7 @@ export interface BrokerClientOptions {
   getLocalSessions: () => AgentSession[];
   onSnapshot: (snapshot: BrokerSnapshot) => void;
   onFocusCommand: (command: FocusCommand) => void | Promise<void>;
+  onAgentEvent?: (event: ExternalAgentEvent) => void | Promise<void>;
   onStatusChange?: (connected: boolean) => void;
 }
 
@@ -31,6 +34,7 @@ export class BrokerClient {
   private timer: NodeJS.Timeout | undefined;
   private running = false;
   private connected = false;
+  private lastEventSequence = 0;
 
   public constructor(private readonly options: BrokerClientOptions) {}
 
@@ -73,11 +77,19 @@ export class BrokerClient {
         'GET',
         `/commands?windowId=${encodeURIComponent(this.options.window.id)}`,
       );
+      const agentEvents = await this.requestJson<AgentEventsResponse>(
+        'GET',
+        `/agent-events?since=${this.lastEventSequence}`,
+      );
 
       this.options.onSnapshot(snapshot);
       for (const command of commands.commands) {
         await this.options.onFocusCommand(command);
       }
+      for (const event of agentEvents.events) {
+        await this.options.onAgentEvent?.(event);
+      }
+      this.lastEventSequence = agentEvents.latestSequence;
       this.setConnected(true);
     } catch {
       this.setConnected(false);
@@ -162,4 +174,3 @@ export class BrokerClient {
     });
   }
 }
-

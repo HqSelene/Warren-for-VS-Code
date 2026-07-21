@@ -1,4 +1,10 @@
-import type { AgentKind, AgentSession, AttentionState, Confidence } from './types';
+import type {
+  AgentKind,
+  AgentSession,
+  AttentionState,
+  Confidence,
+  ExternalAgentEvent,
+} from './types';
 
 const priority: Record<AttentionState, number> = {
   needsYou: 0,
@@ -87,3 +93,76 @@ export function stateLabel(state: AttentionState): string {
   }
 }
 
+export function externalEventState(event: ExternalAgentEvent): {
+  state: AttentionState;
+  reason: string;
+  confidence: Confidence;
+} | undefined {
+  if (event.agent === 'claude') {
+    switch (event.eventType) {
+      case 'UserPromptSubmit':
+      case 'PreToolUse':
+      case 'PostToolUse':
+        return confirmed('working', event.toolName ? `Using ${event.toolName}` : 'Claude is working');
+      case 'PermissionRequest':
+        return confirmed(
+          'needsYou',
+          event.toolName ? `Permission required: ${event.toolName}` : 'Permission required',
+        );
+      case 'Notification':
+        if (event.notificationType === 'permission_prompt') {
+          return confirmed('needsYou', event.reason ?? 'Permission required');
+        }
+        if (event.notificationType === 'idle_prompt') {
+          return confirmed('needsYou', event.reason ?? 'Claude is waiting for input');
+        }
+        return undefined;
+      case 'Stop':
+        return confirmed('done', 'Claude finished responding');
+      case 'StopFailure':
+      case 'PostToolUseFailure':
+        return confirmed('needsYou', event.reason ?? 'Claude reported an error');
+      case 'SessionEnd':
+        return confirmed('done', event.reason ?? 'Claude session ended');
+      default:
+        return undefined;
+    }
+  }
+
+  if (event.agent === 'opencode') {
+    switch (event.eventType) {
+      case 'session.status':
+        if (event.status === 'busy' || event.status === 'retry') {
+          return confirmed('working', event.reason ?? (event.status === 'retry' ? 'OpenCode is retrying' : 'OpenCode is working'));
+        }
+        if (event.status === 'idle') {
+          return confirmed('done', 'OpenCode finished responding');
+        }
+        return undefined;
+      case 'session.idle':
+        return confirmed('done', 'OpenCode finished responding');
+      case 'permission.asked':
+        return confirmed('needsYou', event.reason ?? 'OpenCode needs permission');
+      case 'question.asked':
+        return confirmed('needsYou', event.reason ?? 'OpenCode has a question');
+      case 'permission.replied':
+      case 'question.replied':
+      case 'question.rejected':
+        return confirmed('working', 'OpenCode resumed');
+      case 'session.error':
+        return confirmed('needsYou', event.reason ?? 'OpenCode reported an error');
+      default:
+        return undefined;
+    }
+  }
+
+  return undefined;
+}
+
+function confirmed(state: AttentionState, reason: string): {
+  state: AttentionState;
+  reason: string;
+  confidence: Confidence;
+} {
+  return { state, reason, confidence: 'confirmed' };
+}

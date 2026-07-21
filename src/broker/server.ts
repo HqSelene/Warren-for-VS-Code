@@ -2,7 +2,10 @@ import { randomUUID } from 'node:crypto';
 import * as http from 'node:http';
 import type {
   AgentSession,
+  AgentEventsResponse,
   BrokerSnapshot,
+  ExternalAgentEvent,
+  ExternalAgentEventInput,
   FocusCommand,
   FocusRequest,
   HeartbeatPayload,
@@ -12,6 +15,7 @@ import {
   BROKER_HOST,
   BROKER_PORT,
   BROKER_SERVICE,
+  MAX_AGENT_EVENTS,
   STALE_WINDOW_MS,
 } from './protocol';
 
@@ -25,6 +29,8 @@ export class BrokerServer {
   private server: http.Server | undefined;
   private readonly windows = new Map<string, WindowRecord>();
   private readonly commands = new Map<string, FocusCommand[]>();
+  private readonly agentEvents: ExternalAgentEvent[] = [];
+  private nextEventSequence = 1;
 
   public async start(): Promise<boolean> {
     if (this.server) {
@@ -98,6 +104,30 @@ export class BrokerServer {
 
       if (request.method === 'GET' && url.pathname === '/snapshot') {
         this.json(response, 200, this.snapshot());
+        return;
+      }
+
+      if (request.method === 'POST' && url.pathname === '/agent-event') {
+        const payload = await this.readJson<ExternalAgentEventInput>(request);
+        if (!isAgentEvent(payload)) {
+          this.json(response, 400, { error: 'Invalid agent event' });
+          return;
+        }
+        this.agentEvents.push({ ...payload, sequence: this.nextEventSequence++ });
+        if (this.agentEvents.length > MAX_AGENT_EVENTS) {
+          this.agentEvents.splice(0, this.agentEvents.length - MAX_AGENT_EVENTS);
+        }
+        this.json(response, 202, { ok: true });
+        return;
+      }
+
+      if (request.method === 'GET' && url.pathname === '/agent-events') {
+        const since = Number(url.searchParams.get('since') ?? '0');
+        const body: AgentEventsResponse = {
+          events: this.agentEvents.filter((event) => event.sequence > since),
+          latestSequence: this.nextEventSequence - 1,
+        };
+        this.json(response, 200, body);
         return;
       }
 
@@ -179,3 +209,11 @@ export class BrokerServer {
   }
 }
 
+function isAgentEvent(value: ExternalAgentEventInput): boolean {
+  return (
+    (value?.agent === 'claude' || value?.agent === 'codex' || value?.agent === 'opencode') &&
+    typeof value.eventType === 'string' &&
+    value.eventType.length > 0 &&
+    typeof value.timestamp === 'number'
+  );
+}

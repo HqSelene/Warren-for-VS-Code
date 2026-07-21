@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import * as vscode from 'vscode';
-import { detectAgent, executionEndState } from '../core/state-machine';
+import { detectAgent, executionEndState, externalEventState } from '../core/state-machine';
 import type {
   AgentKind,
   AgentSession,
   Confidence,
+  ExternalAgentEvent,
   SessionSource,
 } from '../core/types';
 import { SessionRegistry } from '../core/session-registry';
@@ -41,6 +42,7 @@ export class TerminalDiscovery implements vscode.Disposable {
         const sessionId = this.trackTerminal(event.terminal, agent, 'shell');
         this.registry.upsert({
           ...this.baseSession(sessionId, event.terminal, agent, 'shell'),
+          cwd: event.execution.cwd?.fsPath,
           state: 'working',
           reason: 'Shell command running',
           confidence,
@@ -106,6 +108,45 @@ export class TerminalDiscovery implements vscode.Disposable {
     return true;
   }
 
+  public applyExternalEvent(event: ExternalAgentEvent): boolean {
+    if (event.targetWindowId && event.targetWindowId !== this.windowId) {
+      return false;
+    }
+    const transition = externalEventState(event);
+    if (!transition) {
+      return false;
+    }
+
+    const candidates = this.registry.getAll().filter((session) => {
+      if (session.windowId !== this.windowId || session.agent !== event.agent) {
+        return false;
+      }
+      if (session.externalSessionId && event.externalSessionId) {
+        return session.externalSessionId === event.externalSessionId;
+      }
+      return true;
+    });
+    const eventCwd = event.cwd;
+    const cwdMatches = eventCwd
+      ? candidates.filter((session) => samePath(session.cwd, eventCwd))
+      : [];
+    const target = (cwdMatches.length > 0 ? cwdMatches : candidates)
+      .sort((left, right) => right.updatedAt - left.updatedAt)[0];
+    if (!target) {
+      return false;
+    }
+
+    this.registry.upsert({
+      ...target,
+      ...transition,
+      source: 'hook',
+      cwd: event.cwd ?? target.cwd,
+      externalSessionId: event.externalSessionId ?? target.externalSessionId,
+      updatedAt: event.timestamp,
+    });
+    return true;
+  }
+
   public dispose(): void {
     for (const disposable of this.disposables) {
       disposable.dispose();
@@ -155,3 +196,11 @@ export class TerminalDiscovery implements vscode.Disposable {
   }
 }
 
+function samePath(left: string | undefined, right: string): boolean {
+  if (!left) {
+    return false;
+  }
+  const normalize = (value: string): string =>
+    value.replace(/[\\/]+$/, '').replaceAll('\\', '/').toLowerCase();
+  return normalize(left) === normalize(right);
+}

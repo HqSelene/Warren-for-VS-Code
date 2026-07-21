@@ -5,6 +5,12 @@ import { BrokerClient } from './broker/client';
 import { shouldNotify } from './core/state-machine';
 import { SessionRegistry } from './core/session-registry';
 import type { AgentSession, WindowDescriptor } from './core/types';
+import {
+  installClaudeAdapter,
+  installOpenCodeAdapter,
+  uninstallClaudeAdapter,
+  uninstallOpenCodeAdapter,
+} from './integrations/installer';
 import { TerminalDiscovery } from './terminal/discovery';
 import { DashboardProvider, type PresentationMode } from './view/provider';
 
@@ -14,6 +20,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     workspaceName: vscode.workspace.name ?? 'Untitled workspace',
     workspaceUri: vscode.workspace.workspaceFolders?.[0]?.uri.toString(),
   };
+  context.environmentVariableCollection.replace(
+    'AGENT_GARDEN_WINDOW_ID',
+    windowDescriptor.id,
+  );
 
   const registry = new SessionRegistry((previous, next) => {
     if (!shouldNotify(previous, next)) {
@@ -102,6 +112,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         void vscode.window.showInformationMessage('Agent Garden focused the requested terminal.');
       }
     },
+    onAgentEvent: (event) => {
+      if (discovery.applyExternalEvent(event)) {
+        broker.publishNow();
+      }
+    },
     onStatusChange: (connected) => provider.setBrokerConnected(connected),
   });
 
@@ -139,9 +154,65 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       provider.setMode(mode);
     }),
     vscode.commands.registerCommand('agentGarden.refresh', () => broker.publishNow()),
+    vscode.commands.registerCommand('agentGarden.installClaudeAdapter', async () => {
+      const answer = await vscode.window.showInformationMessage(
+        'Install Agent Garden hooks into Claude Code settings? A backup will be created.',
+        { modal: true },
+        'Install',
+      );
+      if (answer !== 'Install') {
+        return;
+      }
+      try {
+        const location = await installClaudeAdapter(context);
+        void vscode.window.showInformationMessage(
+          `Claude adapter installed. Restart Claude Code sessions to activate it. (${location})`,
+        );
+      } catch (error) {
+        void vscode.window.showErrorMessage(`Could not install Claude adapter: ${errorMessage(error)}`);
+      }
+    }),
+    vscode.commands.registerCommand('agentGarden.uninstallClaudeAdapter', async () => {
+      try {
+        await uninstallClaudeAdapter();
+        void vscode.window.showInformationMessage('Claude adapter removed.');
+      } catch (error) {
+        void vscode.window.showErrorMessage(`Could not remove Claude adapter: ${errorMessage(error)}`);
+      }
+    }),
+    vscode.commands.registerCommand('agentGarden.installOpenCodeAdapter', async () => {
+      const answer = await vscode.window.showInformationMessage(
+        'Install the Agent Garden plugin into your global OpenCode plugins folder?',
+        { modal: true },
+        'Install',
+      );
+      if (answer !== 'Install') {
+        return;
+      }
+      try {
+        const location = await installOpenCodeAdapter(context);
+        void vscode.window.showInformationMessage(
+          `OpenCode adapter installed. Restart OpenCode sessions to activate it. (${location})`,
+        );
+      } catch (error) {
+        void vscode.window.showErrorMessage(`Could not install OpenCode adapter: ${errorMessage(error)}`);
+      }
+    }),
+    vscode.commands.registerCommand('agentGarden.uninstallOpenCodeAdapter', async () => {
+      try {
+        await uninstallOpenCodeAdapter();
+        void vscode.window.showInformationMessage('OpenCode adapter removed.');
+      } catch (error) {
+        void vscode.window.showErrorMessage(`Could not remove OpenCode adapter: ${errorMessage(error)}`);
+      }
+    }),
   );
 
   await broker.start();
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function updateStatusBar(

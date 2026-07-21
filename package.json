@@ -77,6 +77,22 @@
       {
         "command": "agentGarden.refresh",
         "title": "Agent Garden: Refresh"
+      },
+      {
+        "command": "agentGarden.installClaudeAdapter",
+        "title": "Agent Garden: Install Claude Code Adapter"
+      },
+      {
+        "command": "agentGarden.uninstallClaudeAdapter",
+        "title": "Agent Garden: Uninstall Claude Code Adapter"
+      },
+      {
+        "command": "agentGarden.installOpenCodeAdapter",
+        "title": "Agent Garden: Install OpenCode Adapter"
+      },
+      {
+        "command": "agentGarden.uninstallOpenCodeAdapter",
+        "title": "Agent Garden: Uninstall OpenCode Adapter"
       }
     ],
     "menus": {
