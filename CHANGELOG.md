@@ -2,6 +2,7 @@
 
 ## 0.0.1
 
+- Added one-click Windows setup and uninstall cleanup for the VS Code extension, Agent Garden hooks, OpenCode bridge, and desktop cache while preserving user backups and unrelated configuration.
 - Added the four-state agent attention model.
 - Added Claude, Codex, and OpenCode shell-command discovery.
 - Added loopback-only cross-window session aggregation and focus routing.

@@ -27,13 +27,15 @@ npm.cmd install
 npm.cmd run desktop:dev
 ```
 
-Build the portable Windows application:
+Build the Windows installer:
 
 ```powershell
 npm.cmd run desktop:pack
 ```
 
-The executable is generated under `release/`.
+The installer is generated under `release/` as `Agent-Garden-Setup-0.0.1.exe`. Running it once installs the desktop companion, VS Code bridge, and bundled Claude, Codex, and OpenCode adapters.
+
+To remove Agent Garden, use the normal Windows path **Settings → Apps → Installed apps → Agent Garden → Uninstall**. The uninstaller removes the Agent Garden VS Code extension, its Claude/Codex hook entries, the OpenCode plugin, bridge files, and app cache. It preserves the `.agent-garden.bak` backups and unrelated hooks/configuration.
 
 ## Install the VS Code bridge
 
@@ -43,7 +45,7 @@ Build the VSIX:
 npm.cmd run package
 ```
 
-Install `agent-garden-0.0.1.vsix`, reload VS Code, and open a new integrated terminal. The extension injects a per-window routing ID, discovers agent commands, publishes sessions to the broker, and handles click-to-focus requests from the desktop companion.
+The setup executable installs `agent-garden-0.0.1.vsix` automatically. Reload VS Code and open a new integrated terminal. The extension injects a per-window routing ID, discovers agent commands, publishes sessions to the broker, and handles click-to-focus requests from the desktop companion.
 
 ## Connect real agents
 

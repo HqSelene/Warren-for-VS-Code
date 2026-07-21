@@ -115,7 +115,7 @@
     "package": "npm run compile && vsce package --no-dependencies --allow-missing-repository",
     "desktop:dev": "npm run compile && electron desktop",
     "desktop:icon": "node scripts/generate-app-icon.cjs",
-    "desktop:pack": "npm run desktop:icon && npm run compile && electron-builder --win portable --config electron-builder.yml",
+    "desktop:pack": "npm run package && npm run desktop:icon && npm run compile && electron-builder --win nsis --config electron-builder.yml",
     "vscode:prepublish": "npm run compile"
   },
   "devDependencies": {

@@ -30,7 +30,8 @@ Agent Garden is a desktop companion and VS Code bridge that helps developers see
 - Avoid expanding the first release into orchestration, worktree management, analytics, or code review.
 - Validate extension API limitations before committing to automatic discovery across terminals and windows.
 - For the OpenAI Build Week submission, target the Developer Tools track and provide both a runnable desktop companion and its VS Code bridge.
-- Provide a prebuilt portable Windows executable and VSIX, document supported platforms, and give judges a concise real-session test path.
+- Provide a prebuilt Windows installer and VSIX, document supported platforms, and give judges a concise real-session test path.
+- Make installation and removal one-click on Windows: the NSIS installer bundles the VS Code bridge and adapters, and its uninstaller removes only Agent Garden integrations while preserving backups and unrelated user configuration.
 
 ## Recent Major Changes
 
@@ -44,3 +45,4 @@ Agent Garden is a desktop companion and VS Code bridge that helps developers see
 - Codex lifecycle adapter added from official user-level hooks, enabling real GPT · Codex prompt previews and Working/Needs You/Done states after hook trust approval.
 - Visible state model finalized as Working, Needs You, Done, and Error; unconfirmed name-only terminals remain hidden and ended processes are removed.
 - Desktop interaction refined around a 410×420 default and 330×260 minimum: cards highlight only on hover, reference animations are used at a smaller scale, additional agents scroll inside the window, the collapsed capsule remains draggable, and click-to-focus activates the target VS Code workspace before focusing its terminal.
+- Windows packaging refined with bundled first-run setup and custom uninstall cleanup for the VS Code extension, Agent Garden hooks, OpenCode plugin, bridge files, and app cache.

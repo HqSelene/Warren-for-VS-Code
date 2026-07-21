@@ -17,6 +17,7 @@ import {
 } from '../src/broker/protocol';
 import type { AgentSession, BrokerSnapshot, FocusRequest, WindowDescriptor } from '../src/core/types';
 import { toVsCodeWorkspaceUrl } from '../src/core/vscode-uri';
+import { runFirstLaunchSetup } from './setup';
 
 const FULL_WIDTH = 410;
 const FULL_HEIGHT = 420;
@@ -162,6 +163,9 @@ app.whenReady().then(async () => {
     window?.setAlwaysOnTop(pinned, 'floating');
   });
   await createWindow();
+  if (window) {
+    void runFirstLaunchSetup(window);
+  }
   if (process.env.AGENT_GARDEN_START_COMPACT === '1') {
     setCompact(true);
   }

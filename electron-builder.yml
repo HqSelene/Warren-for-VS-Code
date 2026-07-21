@@ -12,8 +12,28 @@ files:
   - media/icon.svg
 extraMetadata:
   main: out/desktop/main.js
+extraResources:
+  - from: agent-garden-0.0.1.vsix
+    to: setup/agent-garden.vsix
+  - from: scripts/install-adapters.cjs
+    to: setup/scripts/install-adapters.cjs
+  - from: scripts/uninstall-adapters.cjs
+    to: setup/scripts/uninstall-adapters.cjs
+  - from: scripts/uninstall-adapters.cmd
+    to: setup/scripts/uninstall-adapters.cmd
+  - from: media/integrations
+    to: setup/media/integrations
 win:
   icon: build/icon.png
   target:
-    - portable
-  artifactName: Agent-Garden-${version}-portable.${ext}
+    - nsis
+  artifactName: Agent-Garden-Setup-${version}.${ext}
+nsis:
+  include: build/installer.nsh
+  oneClick: true
+  perMachine: false
+  allowElevation: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  runAfterFinish: true
+  shortcutName: Agent Garden
