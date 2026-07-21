@@ -4,6 +4,8 @@
 
 Warren is a cute always-on-top desktop companion for real CLI coding agents running across multiple VS Code windows. It shows what each Claude, GPT · Codex, or OpenCode session is doing, which one needs attention, and lets you jump back to the originating terminal.
 
+[Website](https://hqselene.github.io/Warren-for-VS-Code/) · [Latest release](https://github.com/HqSelene/Warren-for-VS-Code/releases/latest)
+
 ## What it does
 
 - Aggregates real sessions from every active VS Code window.

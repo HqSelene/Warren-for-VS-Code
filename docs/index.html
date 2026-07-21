@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111512" />
+  <meta name="description" content="Warren keeps every Claude Code, Codex, and OpenCode session visible across your VS Code windows." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Warren for VS Code" />
+  <meta property="og:description" content="All your coding agents, at a glance." />
+  <meta property="og:url" content="https://hqselene.github.io/Warren-for-VS-Code/" />
+  <meta property="og:image" content="https://hqselene.github.io/Warren-for-VS-Code/assets/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Warren for VS Code" />
+  <meta name="twitter:description" content="All your coding agents, at a glance." />
+  <meta name="twitter:image" content="https://hqselene.github.io/Warren-for-VS-Code/assets/og.png" />
+  <title>Warren for VS Code — All your coding agents, at a glance.</title>
+  <link rel="icon" type="image/png" href="assets/warren-icon.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Warren home">
+      <img src="assets/warren-icon.png" alt="" width="34" height="34" />
+      <span>Warren</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#privacy">Privacy</a>
+      <a href="https://github.com/HqSelene/Warren-for-VS-Code" target="_blank" rel="noreferrer">GitHub</a>
+    </nav>
+    <a class="button button-small" href="https://github.com/HqSelene/Warren-for-VS-Code/releases/latest">Download</a>
+  </header>
+
+  <main id="main">
+    <section class="hero section" id="top">
+      <div class="hero-copy reveal">
+        <p class="eyebrow"><span></span> Built for OpenAI Build Week</p>
+        <h1>All your coding agents, <em>at a glance.</em></h1>
+        <p class="hero-lede">Warren is a tiny desktop companion that watches Claude Code, Codex, and OpenCode across every VS Code window—so you always know what is working and what needs you.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="https://github.com/HqSelene/Warren-for-VS-Code/releases/latest">
+            Download for Windows <span aria-hidden="true">↓</span>
+          </a>
+          <a class="button button-secondary" href="https://github.com/HqSelene/Warren-for-VS-Code" target="_blank" rel="noreferrer">View source</a>
+        </div>
+        <p class="compatibility">Windows 10/11 <i></i> VS Code 1.125+ <i></i> Free &amp; open source</p>
+        <div class="agent-support" aria-label="Supported coding agents">
+          <span>Works with</span>
+          <strong>Claude Code</strong>
+          <strong>Codex</strong>
+          <strong>OpenCode</strong>
+        </div>
+      </div>
+
+      <div class="hero-product reveal" aria-label="Preview of the Warren desktop companion">
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+        <div class="product-window">
+          <div class="window-bar">
+            <div class="window-brand"><span class="connection"></span><strong>Warren</strong></div>
+            <span class="window-summary">4 agents · 1 needs you</span>
+            <div class="window-controls" aria-hidden="true"><b>◆</b><i>−</i><i>×</i></div>
+          </div>
+
+          <div class="workspace">
+            <div class="workspace-label"><span class="folder"></span>SimArch</div>
+            <article class="agent-card state-needs">
+              <div class="pet pet-codex" aria-hidden="true"><i></i><i></i><b></b><b></b><span>?</span></div>
+              <div class="agent-copy">
+                <div><strong>GPT · Codex</strong><span class="status">Needs you</span></div>
+                <p>Permission: run pytest tests/ — allow command?</p>
+              </div>
+            </article>
+            <article class="agent-card state-working">
+              <div class="pet pet-claude" aria-hidden="true"><i></i><i></i><b></b><b></b></div>
+              <div class="agent-copy">
+                <div><strong>Claude</strong><span class="status">Working</span></div>
+                <p>Refactoring perception.py and updating tests…</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="workspace workspace-last">
+            <div class="workspace-label"><span class="folder"></span>Shopify</div>
+            <article class="agent-card state-done">
+              <div class="pet pet-opencode sleeping" aria-hidden="true"><i></i><i></i><b></b><b></b><span>z</span></div>
+              <div class="agent-copy">
+                <div><strong>OpenCode</strong><span class="status">Done · 4m</span></div>
+                <p>Fixed checkout flow — 3 files changed.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="compact-pill" aria-hidden="true">
+          <strong><span></span> Warren</strong>
+          <div><i class="dot working"></i>1 <i class="dot needs"></i>1 <i class="dot done"></i>1</div>
+          <b>◀</b>
+        </div>
+      </div>
+    </section>
+
+    <section class="attention-strip" aria-label="Warren agent states">
+      <p>Your attention layer for agentic coding.</p>
+      <div>
+        <span><i class="dot working"></i> Working</span>
+        <span><i class="dot needs"></i> Needs you</span>
+        <span><i class="dot done"></i> Done</span>
+        <span><i class="dot error"></i> Error</span>
+      </div>
+    </section>
+
+    <section class="section feature-section" id="features">
+      <div class="section-heading reveal">
+        <p class="kicker">One calm corner</p>
+        <h2>Stop hunting through windows.</h2>
+        <p>Warren turns scattered terminal sessions into a single, quiet view of what matters now.</p>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card feature-wide reveal">
+          <div class="feature-icon windows-icon" aria-hidden="true"><i></i><i></i><i></i></div>
+          <h3>Every window, together</h3>
+          <p>See independent agent sessions from multiple VS Code windows, grouped by workspace and kept correctly separated.</p>
+          <div class="workspace-stack" aria-hidden="true">
+            <span><i></i> SimArch <b>2 agents</b></span>
+            <span><i></i> Shopify <b>1 agent</b></span>
+            <span><i></i> KpopZoo <b>1 agent</b></span>
+          </div>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-icon focus-icon" aria-hidden="true">↗</div>
+          <h3>Jump back instantly</h3>
+          <p>Select any agent and Warren brings its original VS Code window and terminal to the front.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-icon signal-icon" aria-hidden="true"><i></i><i></i><i></i></div>
+          <h3>Real lifecycle signals</h3>
+          <p>Official hooks and plugins report prompts, permissions, completion, and failures—not guessed terminal output.</p>
+        </article>
+
+        <article class="feature-card feature-wide reveal" id="privacy">
+          <div class="privacy-copy">
+            <p class="kicker">Local by design</p>
+            <h3>Your code stays yours.</h3>
+            <p>Warren communicates through an in-memory broker on <code>127.0.0.1</code>. It never stores full prompts, responses, source code, tool inputs, credentials, or terminal output.</p>
+          </div>
+          <div class="local-orbit" aria-hidden="true">
+            <span class="orbit-ring"></span>
+            <span class="orbit-core"><img src="assets/warren-icon.png" alt="" /></span>
+            <i class="orbit-node node-one">VS</i>
+            <i class="orbit-node node-two">CLI</i>
+            <i class="orbit-node node-three">127</i>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="how-it-works">
+      <div class="section-heading reveal">
+        <p class="kicker">Up and running</p>
+        <h2>One installer. Three small steps.</h2>
+        <p>The desktop companion, VS Code bridge, and supported adapters are bundled together.</p>
+      </div>
+      <ol class="steps">
+        <li class="reveal">
+          <span>01</span>
+          <div><h3>Install Warren</h3><p>Run the Windows setup once. Warren installs the companion and VS Code bridge for you.</p></div>
+        </li>
+        <li class="reveal">
+          <span>02</span>
+          <div><h3>Reload VS Code</h3><p>Reload each open window, then create a new integrated terminal in every workspace.</p></div>
+        </li>
+        <li class="reveal">
+          <span>03</span>
+          <div><h3>Start your agents</h3><p>Launch Claude Code, Codex, or OpenCode as usual. Warren quietly keeps watch.</p></div>
+        </li>
+      </ol>
+      <a class="text-link" href="https://github.com/HqSelene/Warren-for-VS-Code#install-warren-recommended" target="_blank" rel="noreferrer">Read the installation guide <span aria-hidden="true">↗</span></a>
+    </section>
+
+    <section class="section final-cta reveal">
+      <img src="assets/warren-icon.png" alt="Warren rabbit mascot" width="96" height="96" />
+      <p class="kicker">Make room for focus</p>
+      <h2>Give your agents a little corner.</h2>
+      <p>Know when they are working, waiting, finished, or stuck—without breaking your flow.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="https://github.com/HqSelene/Warren-for-VS-Code/releases/latest">Download Warren <span aria-hidden="true">↓</span></a>
+        <a class="button button-secondary" href="https://github.com/HqSelene/Warren-for-VS-Code" target="_blank" rel="noreferrer">Star on GitHub</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="#top"><img src="assets/warren-icon.png" alt="" width="30" height="30" /><span>Warren</span></a>
+    <p>Built with Codex and GPT-5.6 for OpenAI Build Week.</p>
+    <p>© <span id="year">2026</span> Warren · <a href="https://github.com/HqSelene/Warren-for-VS-Code/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT License</a></p>
+  </footer>
+</body>
+</html>

@@ -11,6 +11,7 @@ Warren for VS Code is a desktop companion and VS Code bridge that helps develope
 - Agent adapters: official Claude Code Hooks, Codex lifecycle Hooks, and an OpenCode Plugin normalize real prompts, permissions, work, completion, and failure events.
 - Embedded loopback broker: the first active extension window owns a local-only broker and other windows connect as clients to aggregate sessions and route focus commands.
 - Presentation modes: a full pet dashboard and a compact status capsule, both limited to real detected sessions.
+- Marketing website: a responsive GitHub Pages landing page introduces Warren, demonstrates its four attention states, explains local-only data handling, and links to the latest Windows release.
 
 ## Key Workflows
 
@@ -35,6 +36,7 @@ Warren for VS Code is a desktop companion and VS Code bridge that helps develope
 
 ## Recent Major Changes
 
+- A responsive Warren product website and GitHub Pages deployment workflow were added under `docs/`, with a version-independent link to the latest GitHub Release.
 - README installation guidance now leads with the one-click Windows setup and documents manual VSIX, adapter, and source fallbacks for users and judges.
 - Initial product direction documented: an attention layer for AI coding CLI sessions, starting as a VS Code extension and evaluating a later desktop companion.
 - Build Week scope selected: demonstrate the four attention states, multi-window/session aggregation, and click-to-focus in a narrow working prototype built with Codex and GPT-5.6.
