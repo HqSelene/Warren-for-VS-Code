@@ -1,0 +1,116 @@
+{
+  "name": "agent-garden",
+  "displayName": "Agent Garden",
+  "description": "See which CLI coding agent needs you across your VS Code windows.",
+  "version": "0.0.1",
+  "publisher": "agent-garden-labs",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.125.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "agents",
+    "codex",
+    "claude",
+    "terminal",
+    "productivity"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:agentGarden.panel"
+  ],
+  "main": "./out/src/extension.js",
+  "files": [
+    "out/src",
+    "media",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "agentGarden",
+          "title": "Agent Garden",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "agentGarden": [
+        {
+          "id": "agentGarden.panel",
+          "name": "Agent Attention",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "agentGarden.open",
+        "title": "Agent Garden: Open"
+      },
+      {
+        "command": "agentGarden.startDemo",
+        "title": "Agent Garden: Start Demo"
+      },
+      {
+        "command": "agentGarden.advanceDemo",
+        "title": "Agent Garden: Advance Demo States"
+      },
+      {
+        "command": "agentGarden.resetDemo",
+        "title": "Agent Garden: Reset Demo"
+      },
+      {
+        "command": "agentGarden.toggleMode",
+        "title": "Agent Garden: Toggle Utility/Garden Mode"
+      },
+      {
+        "command": "agentGarden.refresh",
+        "title": "Agent Garden: Refresh"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "agentGarden.startDemo",
+          "when": "view == agentGarden.panel",
+          "group": "navigation@1"
+        },
+        {
+          "command": "agentGarden.toggleMode",
+          "when": "view == agentGarden.panel",
+          "group": "navigation@2"
+        },
+        {
+          "command": "agentGarden.refresh",
+          "when": "view == agentGarden.panel",
+          "group": "navigation@3"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -watch -p .",
+    "test": "npm run compile && node --test \"out/test/*.test.js\"",
+    "check": "npm run compile && npm test",
+    "package": "npm run compile && vsce package --no-dependencies --allow-missing-repository",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "@types/vscode": "^1.125.0",
+    "@vscode/vsce": "^3.9.2",
+    "typescript": "^7.0.2"
+  }
+}

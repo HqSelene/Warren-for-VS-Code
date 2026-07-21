@@ -1,0 +1,157 @@
+import { randomUUID } from 'node:crypto';
+import * as vscode from 'vscode';
+import { detectAgent, executionEndState } from '../core/state-machine';
+import type {
+  AgentKind,
+  AgentSession,
+  Confidence,
+  SessionSource,
+} from '../core/types';
+import { SessionRegistry } from '../core/session-registry';
+
+export class TerminalDiscovery implements vscode.Disposable {
+  private readonly disposables: vscode.Disposable[] = [];
+  private readonly terminalIds = new Map<vscode.Terminal, string>();
+  private readonly terminalsById = new Map<string, vscode.Terminal>();
+
+  public constructor(
+    private readonly registry: SessionRegistry,
+    private readonly windowId: string,
+    private readonly workspaceName: string,
+  ) {}
+
+  public initialize(): void {
+    for (const terminal of vscode.window.terminals) {
+      this.observeTerminalName(terminal);
+    }
+
+    this.disposables.push(
+      vscode.window.onDidOpenTerminal((terminal) => this.observeTerminalName(terminal)),
+      vscode.window.onDidCloseTerminal((terminal) => this.handleClose(terminal)),
+      vscode.window.onDidStartTerminalShellExecution((event) => {
+        const commandLine = event.execution.commandLine;
+        const agent = detectAgent(commandLine.value);
+        if (agent === 'unknown') {
+          return;
+        }
+        const confidence: Confidence =
+          commandLine.confidence === vscode.TerminalShellExecutionCommandLineConfidence.High
+            ? 'confirmed'
+            : 'inferred';
+        const sessionId = this.trackTerminal(event.terminal, agent, 'shell');
+        this.registry.upsert({
+          ...this.baseSession(sessionId, event.terminal, agent, 'shell'),
+          state: 'working',
+          reason: 'Shell command running',
+          confidence,
+          updatedAt: Date.now(),
+        });
+      }),
+      vscode.window.onDidEndTerminalShellExecution((event) => {
+        const agent = detectAgent(event.execution.commandLine.value);
+        const knownSessionId = this.terminalIds.get(event.terminal);
+        if (!knownSessionId && agent === 'unknown') {
+          return;
+        }
+        const sessionId = knownSessionId ?? this.trackTerminal(event.terminal, agent, 'shell');
+        const previous = this.registry.get(sessionId);
+        const end = executionEndState(event.exitCode);
+        this.registry.upsert({
+          ...this.baseSession(
+            sessionId,
+            event.terminal,
+            previous?.agent ?? agent,
+            previous?.source ?? 'shell',
+          ),
+          ...end,
+          updatedAt: Date.now(),
+        });
+      }),
+    );
+  }
+
+  public trackTerminal(
+    terminal: vscode.Terminal,
+    agent: AgentKind,
+    source: SessionSource,
+  ): string {
+    const existing = this.terminalIds.get(terminal);
+    if (existing) {
+      return existing;
+    }
+
+    const terminalId = randomUUID();
+    this.terminalIds.set(terminal, terminalId);
+    this.terminalsById.set(terminalId, terminal);
+
+    if (agent !== 'unknown') {
+      this.registry.upsert({
+        ...this.baseSession(terminalId, terminal, agent, source),
+        state: 'unknown',
+        reason: 'Detected terminal; waiting for a state signal',
+        confidence: 'inferred',
+        updatedAt: Date.now(),
+      });
+    }
+
+    return terminalId;
+  }
+
+  public focus(terminalId: string): boolean {
+    const terminal = this.terminalsById.get(terminalId);
+    if (!terminal) {
+      return false;
+    }
+    terminal.show(false);
+    return true;
+  }
+
+  public dispose(): void {
+    for (const disposable of this.disposables) {
+      disposable.dispose();
+    }
+  }
+
+  private observeTerminalName(terminal: vscode.Terminal): void {
+    const agent = detectAgent(terminal.name);
+    if (agent !== 'unknown') {
+      this.trackTerminal(terminal, agent, 'shell');
+    }
+  }
+
+  private handleClose(terminal: vscode.Terminal): void {
+    const sessionId = this.terminalIds.get(terminal);
+    if (!sessionId) {
+      return;
+    }
+    const session = this.registry.get(sessionId);
+    if (session) {
+      this.registry.upsert({
+        ...session,
+        state: 'unknown',
+        reason: 'Terminal closed',
+        confidence: 'confirmed',
+        updatedAt: Date.now(),
+      });
+    }
+    this.terminalIds.delete(terminal);
+    this.terminalsById.delete(sessionId);
+  }
+
+  private baseSession(
+    sessionId: string,
+    terminal: vscode.Terminal,
+    agent: AgentKind,
+    source: SessionSource,
+  ): Omit<AgentSession, 'state' | 'confidence' | 'updatedAt'> {
+    return {
+      sessionId,
+      terminalId: sessionId,
+      windowId: this.windowId,
+      workspaceName: this.workspaceName,
+      agent,
+      source,
+    };
+  }
+}
+

@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# TypeScript output and test coverage
+out/
+dist/
+coverage/
+*.tsbuildinfo
+.vscode-test/
+
+# Packaged applications and extension bundles
+# Upload the installer and VSIX to GitHub Releases instead of committing them.
+release/
+*.vsix
+
+# Local screenshots, Electron profiles, and visual QA output
+artifacts/
+
+# Local agent configuration
+.agents/
+.claude/
+.codex/
+.opencode/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
