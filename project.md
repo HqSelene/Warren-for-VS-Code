@@ -35,6 +35,7 @@ Warren for VS Code is a desktop companion and VS Code bridge that helps develope
 
 ## Recent Major Changes
 
+- README installation guidance now leads with the one-click Windows setup and documents manual VSIX, adapter, and source fallbacks for users and judges.
 - Initial product direction documented: an attention layer for AI coding CLI sessions, starting as a VS Code extension and evaluating a later desktop companion.
 - Build Week scope selected: demonstrate the four attention states, multi-window/session aggregation, and click-to-focus in a narrow working prototype built with Codex and GPT-5.6.
 - Engineering plan established in `docs/BUILD_PLAN.md`: build the TypeScript VS Code extension first, then add the loopback cross-window broker and Warren presentation.

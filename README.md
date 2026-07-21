@@ -17,16 +17,85 @@ Warren is a cute always-on-top desktop companion for real CLI coding agents runn
 
 The desktop app and VS Code extensions communicate only through an in-memory HTTP broker bound to `127.0.0.1`. Full prompts, responses, tool inputs, terminal output, source code, and credentials are not persisted.
 
-## Run the desktop companion
+## Install Warren (recommended)
+
+Requirements:
+
+- Windows 10 or Windows 11
+- Desktop VS Code 1.125 or newer
+- At least one supported CLI: Claude Code, Codex, or OpenCode
+
+1. Download `Warren-Setup-0.0.1.exe` from the GitHub Releases page.
+2. Run the installer once. If Windows SmartScreen appears, select **More info → Run anyway**.
+3. Warren automatically installs the desktop companion, VS Code bridge, and bundled Claude, Codex, and OpenCode adapters.
+4. Reload every open VS Code window.
+5. Open a new integrated terminal in each workspace, then start the supported agents you want to monitor.
+6. Codex users should open `/hooks`, review the Warren user hook, and trust it.
+
+Normal users do not need to install the VSIX separately. Opening new terminals after reloading VS Code is important because Warren injects a unique routing ID for every VS Code window.
+
+## Manual fallback installation
+
+Use this route if automatic VS Code bridge setup fails or when testing a development build.
+
+### 1. Install the VS Code bridge manually
+
+Download `agent-garden-0.0.1.vsix` from the GitHub Release assets. The filename retains the original internal package ID for upgrade compatibility, but it appears as **Warren** inside VS Code.
+
+In VS Code:
+
+1. Open the Extensions view.
+2. Select the `...` menu.
+3. Choose **Install from VSIX...**.
+4. Select `agent-garden-0.0.1.vsix`.
+5. Run **Developer: Reload Window** in every open VS Code window.
+
+You can also install it from PowerShell:
+
+```powershell
+code --install-extension .\agent-garden-0.0.1.vsix --force
+```
+
+### 2. Install the agent adapters manually
+
+Run the adapters you need from the VS Code Command Palette:
+
+- **Warren: Install Claude Code Adapter**
+- **Warren: Install Codex Adapter**
+- **Warren: Install OpenCode Adapter**
+
+Restart the corresponding CLI after installation. Codex users must also open `/hooks`, review the Warren user hook, and trust it.
+
+Adapter locations:
+
+- Claude: merges marked hooks into `~/.claude/settings.json`.
+- Codex: merges marked hooks into `~/.codex/hooks.json`.
+- OpenCode: installs `~/.config/opencode/plugins/agent-garden.js`.
+
+Existing settings are preserved and an `.agent-garden.bak` backup is created before the first modification. Warren's uninstall commands remove only Warren-owned entries.
+
+If the Windows installer already installed the desktop application, start **Warren** normally after completing these steps.
+
+### 3. Run the desktop companion from source
+
+Use this only if you cannot use the Windows installer.
 
 Requirements:
 
 - Node.js 20 or newer
-- VS Code 1.125 or newer
+- Desktop VS Code 1.125 or newer
 
 ```powershell
 npm.cmd install
 npm.cmd run desktop:dev
+```
+
+## Build packages from source
+
+Build the VSIX:
+
+```powershell
+npm.cmd run package
 ```
 
 Build the Windows installer:
@@ -35,37 +104,14 @@ Build the Windows installer:
 npm.cmd run desktop:pack
 ```
 
-The installer is generated under `release/` as `Warren-Setup-0.0.1.exe`. Running it once installs the desktop companion, VS Code bridge, and bundled Claude, Codex, and OpenCode adapters.
+Build artifacts:
 
-To remove Warren, use the normal Windows path **Settings → Apps → Installed apps → Warren → Uninstall**. The uninstaller removes the Warren VS Code extension, its Claude/Codex hook entries, the OpenCode plugin, bridge files, and app cache. It preserves the `.agent-garden.bak` backups and unrelated hooks/configuration.
+- `agent-garden-0.0.1.vsix`
+- `release/Warren-Setup-0.0.1.exe`
 
-## Install the VS Code bridge
+## Uninstall
 
-Build the VSIX:
-
-```powershell
-npm.cmd run package
-```
-
-The setup executable installs the Warren VS Code bridge automatically. Reload VS Code and open a new integrated terminal. The extension injects a per-window routing ID, discovers agent commands, publishes sessions to the broker, and handles click-to-focus requests from the desktop companion.
-
-## Connect real agents
-
-Run these commands from the VS Code Command Palette:
-
-- **Warren: Install Claude Code Adapter**
-- **Warren: Install Codex Adapter**
-- **Warren: Install OpenCode Adapter**
-
-Restart the corresponding CLI after installing an adapter. Codex requires one additional trust step: open `/hooks`, review the Warren user hook, and trust it. This is Codex's standard trust flow for non-managed command hooks.
-
-Adapter locations:
-
-- Claude: merges hooks into `~/.claude/settings.json`.
-- Codex: merges hooks into `~/.codex/hooks.json`.
-- OpenCode: installs `~/.config/opencode/plugins/agent-garden.js`.
-
-The installers preserve existing settings and create an `.agent-garden.bak` backup before the first modification. Matching uninstall commands remove only Warren entries.
+Use **Settings → Apps → Installed apps → Warren → Uninstall**. The uninstaller removes the Warren desktop application, VS Code extension, marked Claude/Codex hooks, OpenCode plugin, bridge files, and app cache. It preserves `.agent-garden.bak` backups and unrelated user configuration.
 
 ## Real event mapping
 
@@ -85,7 +131,7 @@ For a real end-to-end check, start the desktop app, open two VS Code windows, cr
 
 ## Supported platforms
 
-The current Build Week package is tested on Windows with desktop VS Code. The extension uses stable VS Code APIs and the desktop companion uses Electron. The portable executable is not yet code-signed, so Windows SmartScreen may identify the publisher as unknown; judges can use **More info → Run anyway** or run the app from source. macOS, Linux, remote workspaces, and web-based VS Code are not yet part of the supported test matrix.
+The current Build Week package is tested on Windows with desktop VS Code. The extension uses stable VS Code APIs and the desktop companion uses Electron. The Windows installer is not yet code-signed, so Windows SmartScreen may identify the publisher as unknown; judges can use **More info → Run anyway** or run the app from source. macOS, Linux, remote workspaces, and web-based VS Code are not yet part of the supported test matrix.
 
 ## How Codex and GPT-5.6 were used
 
