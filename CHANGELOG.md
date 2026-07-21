@@ -16,3 +16,4 @@
 - Added a branded pet application icon and repeatable Windows portable packaging.
 - Added a real Codex lifecycle hook adapter for prompt, tool, permission, and completion events.
 - Replaced the visible Unknown state with Error; unconfirmed terminals stay hidden and ended sessions disappear.
+- Stabilized dynamic window sizing to prevent polling jitter and replaced the low collapse glyph with a centered right-pointing control.

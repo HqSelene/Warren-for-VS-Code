@@ -26,6 +26,7 @@ let broker: BrokerServer | undefined;
 let pollTimer: NodeJS.Timeout | undefined;
 let compact = false;
 let quitting = false;
+let expandedHeight = FULL_HEIGHT;
 
 async function createWindow(): Promise<void> {
   const display = screen.getPrimaryDisplay().workArea;
@@ -104,7 +105,11 @@ function setCompact(value: boolean): void {
   compact = value;
   const current = window.getBounds();
   const width = compact ? COMPACT_WIDTH : FULL_WIDTH;
-  const height = compact ? COMPACT_HEIGHT : FULL_HEIGHT;
+  const height = compact ? COMPACT_HEIGHT : expandedHeight;
+  if (current.width === width && current.height === height) {
+    window.webContents.send('garden:compact', compact);
+    return;
+  }
   window.setBounds({
     x: current.x + current.width - width,
     y: current.y + current.height - height,
@@ -128,11 +133,18 @@ app.whenReady().then(async () => {
     window?.setAlwaysOnTop(pinned, 'floating');
   });
   ipcMain.on('garden:set-height', (_event, requestedHeight: number) => {
-    if (!window || compact) {
+    if (!window || !Number.isFinite(requestedHeight)) {
       return;
     }
     const nextHeight = Math.max(360, Math.min(760, Math.round(requestedHeight)));
+    expandedHeight = nextHeight;
+    if (compact) {
+      return;
+    }
     const current = window.getBounds();
+    if (current.height === nextHeight) {
+      return;
+    }
     window.setBounds({
       ...current,
       y: current.y + current.height - nextHeight,

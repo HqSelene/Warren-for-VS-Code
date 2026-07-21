@@ -14,7 +14,7 @@
       <div id="summary" class="summary">0 agents · 0 needs you</div>
       <div class="window-actions">
         <button class="icon-button active" data-action="pin" title="Always on top">◆</button>
-        <button class="icon-button" data-action="compact" title="Collapse">⌄</button>
+        <button class="icon-button" data-action="compact" title="Collapse" aria-label="Collapse"><span class="direction-mark collapse-mark" aria-hidden="true"></span></button>
         <button class="icon-button" data-action="minimize" title="Minimize">−</button>
         <button class="icon-button close" data-action="close" title="Close">×</button>
       </div>
@@ -29,7 +29,7 @@
   <button class="compact-bar" data-action="expand" title="Expand Agent Garden">
     <span class="compact-brand"><i></i>Agent garden</span>
     <span id="compact-summary" class="compact-summary"></span>
-    <span class="expand-mark">⌃</span>
+    <span class="direction-mark expand-mark" aria-hidden="true"></span>
   </button>
   <script src="../out/desktop/renderer.js"></script>
 </body>

@@ -30,6 +30,7 @@ let sessions: AgentSession[] = [];
 let connected = false;
 let compact = false;
 let pinned = true;
+let lastRequestedHeight: number | undefined;
 
 const list = requiredElement('session-list');
 const empty = requiredElement('empty');
@@ -83,8 +84,9 @@ function render(): void {
   summary.textContent = `${sorted.length} agent${sorted.length === 1 ? '' : 's'} · ${counts.needsYou} needs you`;
   compactSummary.replaceChildren(...summaryPills(counts));
 
-  if (!compact) {
-    const height = Math.min(720, 112 + byWorkspace.size * 34 + sorted.length * 78 + (sorted.length === 0 ? 170 : 20));
+  const height = Math.min(720, 112 + byWorkspace.size * 34 + sorted.length * 78 + (sorted.length === 0 ? 170 : 20));
+  if (height !== lastRequestedHeight) {
+    lastRequestedHeight = height;
     api.setHeight(height);
   }
 }
