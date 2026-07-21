@@ -43,9 +43,11 @@ export class TerminalDiscovery implements vscode.Disposable {
         this.registry.upsert({
           ...this.baseSession(sessionId, event.terminal, agent, 'shell'),
           cwd: event.execution.cwd?.fsPath,
-          state: 'working',
-          reason: 'Shell command running',
-          confidence,
+          state: 'needsYou',
+          reason: 'Ready for your instruction',
+          // Starting a shell command only proves that the CLI exists. The
+          // adapter hook/plugin is what confirms that it is actively working.
+          confidence: confidence === 'confirmed' ? 'inferred' : confidence,
           updatedAt: Date.now(),
         });
       }),
