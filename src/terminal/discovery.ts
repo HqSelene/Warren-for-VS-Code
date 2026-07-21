@@ -107,11 +107,24 @@ export class TerminalDiscovery implements vscode.Disposable {
       return true;
     });
     const eventCwd = event.cwd;
+    const exactMatches = event.externalSessionId
+      ? candidates.filter((session) => session.externalSessionId === event.externalSessionId)
+      : [];
     const cwdMatches = eventCwd
       ? candidates.filter((session) => samePath(session.cwd, eventCwd))
       : [];
-    const target = (cwdMatches.length > 0 ? cwdMatches : candidates)
-      .sort((left, right) => right.updatedAt - left.updatedAt)[0];
+    const targetPool = exactMatches.length > 0
+      ? exactMatches
+      : cwdMatches.length > 0
+        ? cwdMatches
+        : candidates;
+    // An event without a target window must never be applied to an arbitrary
+    // same-agent terminal. If more than one local session could match, wait
+    // for a routed event instead of copying A's state into B.
+    if (targetPool.length !== 1) {
+      return false;
+    }
+    const target = targetPool[0];
     if (!target) {
       return false;
     }

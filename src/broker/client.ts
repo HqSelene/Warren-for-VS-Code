@@ -88,6 +88,12 @@ export class BrokerClient {
         await this.options.onFocusCommand(command);
       }
       for (const event of agentEvents.events) {
+        // An unscoped hook event is unsafe to apply: another VS Code window
+        // may own the same CLI agent. The broker normally resolves the target
+        // from session ID/cwd; until then, wait for a routed follow-up event.
+        if (!event.targetWindowId || event.targetWindowId !== this.options.window.id) {
+          continue;
+        }
         await this.options.onAgentEvent?.(event);
       }
       this.lastEventSequence = agentEvents.latestSequence;

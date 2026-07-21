@@ -47,3 +47,4 @@ Agent Garden is a desktop companion and VS Code bridge that helps developers see
 - Desktop interaction refined around a 410×420 default and 330×260 minimum: cards highlight only on hover, reference animations are used at a smaller scale, additional agents scroll inside the window, the collapsed capsule remains draggable, and click-to-focus activates the target VS Code workspace before focusing its terminal.
 - Windows packaging refined with bundled first-run setup and custom uninstall cleanup for the VS Code extension, Agent Garden hooks, OpenCode plugin, bridge files, and app cache.
 - Initial shell detection now shows a session as Needs You / “Ready for your instruction” until a real Claude Hook, Codex Hook, or OpenCode Plugin event confirms active work.
+- Cross-window event routing now resolves unscoped adapter events by unique external session ID or workspace path and drops ambiguous events instead of mirroring one Agent's state into another window.

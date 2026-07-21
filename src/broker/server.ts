@@ -115,7 +115,10 @@ export class BrokerServer {
           this.json(response, 400, { error: 'Invalid agent event' });
           return;
         }
-        this.agentEvents.push({ ...payload, sequence: this.nextEventSequence++ });
+        this.agentEvents.push({
+          ...this.resolveAgentEventTarget(payload),
+          sequence: this.nextEventSequence++,
+        });
         if (this.agentEvents.length > MAX_AGENT_EVENTS) {
           this.agentEvents.splice(0, this.agentEvents.length - MAX_AGENT_EVENTS);
         }
@@ -178,6 +181,42 @@ export class BrokerServer {
     };
   }
 
+  private resolveAgentEventTarget(event: ExternalAgentEventInput): ExternalAgentEventInput {
+    if (event.targetWindowId) {
+      return event;
+    }
+    const sessionMatches = new Set<string>();
+    if (event.externalSessionId) {
+      for (const [windowId, record] of this.windows) {
+        if (record.sessions.some((session) =>
+          session.agent === event.agent && session.externalSessionId === event.externalSessionId,
+        )) {
+          sessionMatches.add(windowId);
+        }
+      }
+      if (sessionMatches.size === 1) {
+        return { ...event, targetWindowId: [...sessionMatches][0] };
+      }
+      if (sessionMatches.size > 1) {
+        return event;
+      }
+    }
+
+    const cwdMatches = new Set<string>();
+    for (const [windowId, record] of this.windows) {
+      const sameAgent = record.sessions.filter((session) => session.agent === event.agent);
+      const cwdMatch = event.cwd
+        ? sameAgent.some((session) => samePath(session.cwd, event.cwd as string))
+        : false;
+      if (cwdMatch || (!event.externalSessionId && !event.cwd && sameAgent.length === 1)) {
+        cwdMatches.add(windowId);
+      }
+    }
+    return cwdMatches.size === 1
+      ? { ...event, targetWindowId: [...cwdMatches][0] }
+      : event;
+  }
+
   private cleanup(): void {
     const staleBefore = Date.now() - STALE_WINDOW_MS;
     for (const [windowId, record] of this.windows) {
@@ -218,4 +257,13 @@ function isAgentEvent(value: ExternalAgentEventInput): boolean {
     value.eventType.length > 0 &&
     typeof value.timestamp === 'number'
   );
+}
+
+function samePath(left: string | undefined, right: string): boolean {
+  if (!left) {
+    return false;
+  }
+  const normalize = (value: string): string =>
+    value.replace(/[\\/]+$/, '').replaceAll('\\', '/').toLowerCase();
+  return normalize(left) === normalize(right);
 }
