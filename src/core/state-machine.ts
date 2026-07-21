@@ -8,9 +8,9 @@ import type {
 
 const priority: Record<AttentionState, number> = {
   needsYou: 0,
-  working: 1,
-  done: 2,
-  unknown: 3,
+  error: 1,
+  working: 2,
+  done: 3,
 };
 
 export function detectAgent(commandLine: string): AgentKind {
@@ -53,7 +53,7 @@ export function shouldNotify(
     return false;
   }
 
-  return next.state === 'needsYou' || next.state === 'done';
+  return next.state === 'needsYou' || next.state === 'done' || next.state === 'error';
 }
 
 export function stateLabel(state: AttentionState): string {
@@ -64,8 +64,8 @@ export function stateLabel(state: AttentionState): string {
       return 'Working';
     case 'done':
       return 'Done';
-    case 'unknown':
-      return 'Unknown';
+    case 'error':
+      return 'Error';
   }
 }
 
@@ -97,7 +97,7 @@ export function externalEventState(event: ExternalAgentEvent): {
         return confirmed('done', 'Claude finished responding');
       case 'StopFailure':
       case 'PostToolUseFailure':
-        return confirmed('needsYou', event.reason ?? 'Claude reported an error');
+        return confirmed('error', event.reason ?? 'Claude reported an error');
       case 'SessionEnd':
         return confirmed('done', event.reason ?? 'Claude session ended');
       default:
@@ -128,7 +128,25 @@ export function externalEventState(event: ExternalAgentEvent): {
       case 'question.rejected':
         return confirmed('working', 'OpenCode resumed');
       case 'session.error':
-        return confirmed('needsYou', event.reason ?? 'OpenCode reported an error');
+        return confirmed('error', event.reason ?? 'OpenCode reported an error');
+      default:
+        return undefined;
+    }
+  }
+
+  if (event.agent === 'codex') {
+    switch (event.eventType) {
+      case 'UserPromptSubmit':
+      case 'PreToolUse':
+      case 'PostToolUse':
+        return confirmed('working', event.toolName ? `Using ${event.toolName}` : 'Codex is working');
+      case 'PermissionRequest':
+        return confirmed(
+          'needsYou',
+          event.toolName ? `Permission required: ${event.toolName}` : 'Permission required',
+        );
+      case 'Stop':
+        return confirmed('done', 'Codex finished responding');
       default:
         return undefined;
     }

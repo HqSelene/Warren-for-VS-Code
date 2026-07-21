@@ -12,3 +12,7 @@
 - Removed Demo Mode so the UI contains only real detected sessions.
 - Removed sessions immediately when their agent process or terminal ends.
 - Added a locally transported, 160-character one-line user-instruction preview.
+- Added an Electron always-on-top desktop companion with workspace grouping, animated CSS pets, terminal focus, and a compact capsule.
+- Added a branded pet application icon and repeatable Windows portable packaging.
+- Added a real Codex lifecycle hook adapter for prompt, tool, permission, and completion events.
+- Replaced the visible Unknown state with Error; unconfirmed terminals stay hidden and ended sessions disappear.

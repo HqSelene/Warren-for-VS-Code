@@ -32,27 +32,27 @@ test('detects supported CLI agents without matching unrelated text', () => {
   assert.equal(detectAgent('echo codexical'), 'unknown');
 });
 
-test('sorts needs-you sessions before work, completion, and unknown', () => {
+test('sorts attention and errors before work and completion', () => {
   const sessions = sortSessions([
-    session({ sessionId: 'unknown', state: 'unknown' }),
+    session({ sessionId: 'error', state: 'error' }),
     session({ sessionId: 'done', state: 'done' }),
     session({ sessionId: 'working', state: 'working' }),
     session({ sessionId: 'needs', state: 'needsYou' }),
   ]);
   assert.deepEqual(sessions.map((item) => item.sessionId), [
     'needs',
+    'error',
     'working',
     'done',
-    'unknown',
   ]);
 });
 
-test('notifies only when an existing session transitions to attention or done', () => {
+test('notifies only when an existing session transitions to attention, error, or done', () => {
   const working = session({ state: 'working' });
   assert.equal(shouldNotify(undefined, working), false);
   assert.equal(shouldNotify(working, session({ state: 'needsYou' })), true);
   assert.equal(shouldNotify(working, session({ state: 'done' })), true);
-  assert.equal(shouldNotify(working, session({ state: 'unknown' })), false);
+  assert.equal(shouldNotify(working, session({ state: 'error' })), true);
 });
 
 function externalEvent(
@@ -92,10 +92,25 @@ test('maps real OpenCode plugin events to attention states', () => {
   );
   assert.equal(
     externalEventState(externalEvent({ agent: 'opencode', eventType: 'session.error' }))?.state,
-    'needsYou',
+    'error',
   );
   assert.equal(
     externalEventState(externalEvent({ agent: 'opencode', eventType: 'user.prompt' }))?.state,
     'working',
+  );
+});
+
+test('maps real Codex hook events to attention states', () => {
+  assert.equal(
+    externalEventState(externalEvent({ agent: 'codex', eventType: 'UserPromptSubmit' }))?.state,
+    'working',
+  );
+  assert.equal(
+    externalEventState(externalEvent({ agent: 'codex', eventType: 'PermissionRequest' }))?.state,
+    'needsYou',
+  );
+  assert.equal(
+    externalEventState(externalEvent({ agent: 'codex', eventType: 'Stop' }))?.state,
+    'done',
   );
 });

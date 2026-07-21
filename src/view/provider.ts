@@ -11,7 +11,7 @@ export interface DashboardActions {
   refresh: () => void;
 }
 
-const stateOrder: AttentionState[] = ['needsYou', 'working', 'done', 'unknown'];
+const stateOrder: AttentionState[] = ['needsYou', 'error', 'working', 'done'];
 
 export class DashboardProvider implements vscode.WebviewViewProvider {
   private view: vscode.WebviewView | undefined;
@@ -117,12 +117,12 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
     .state-working { --state-color:var(--vscode-charts-blue); }
     .state-needsYou { --state-color:var(--vscode-charts-orange); }
     .state-done { --state-color:var(--vscode-testing-iconPassed); }
-    .state-unknown { --state-color:var(--vscode-disabledForeground); }
+    .state-error { --state-color:var(--vscode-testing-iconFailed); }
     .dot { width:8px; height:8px; border-radius:50%; background:var(--state-color); }
     .pet { font-size:24px; line-height:1; transform-origin:center bottom; }
     .state-working .pet { animation:work .8s ease-in-out infinite alternate; }
     .state-needsYou .pet { animation:ask .7s ease-in-out infinite alternate; }
-    .state-unknown .pet { filter:grayscale(1); opacity:.55; }
+    .state-error .pet { animation:ask .24s ease-in-out infinite alternate; }
     @keyframes work { to { transform:translateY(-3px) rotate(-3deg); } }
     @keyframes ask { to { transform:scale(1.12); } }
     .session-main { min-width:0; }
@@ -184,8 +184,8 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
     if (session.state === 'done') {
       return '🎉';
     }
-    if (session.state === 'unknown') {
-      return '💤';
+    if (session.state === 'error') {
+      return '💥';
     }
     switch (session.agent) {
       case 'claude':

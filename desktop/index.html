@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self';" />
+  <title>Agent Garden</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="panel">
+    <header class="titlebar">
+      <div class="brand"><span id="connection" class="connection"></span><strong>Agent garden</strong></div>
+      <div id="summary" class="summary">0 agents · 0 needs you</div>
+      <div class="window-actions">
+        <button class="icon-button active" data-action="pin" title="Always on top">◆</button>
+        <button class="icon-button" data-action="compact" title="Collapse">⌄</button>
+        <button class="icon-button" data-action="minimize" title="Minimize">−</button>
+        <button class="icon-button close" data-action="close" title="Close">×</button>
+      </div>
+    </header>
+    <section id="session-list" class="session-list"></section>
+    <section id="empty" class="empty">
+      <div class="empty-pet"><i></i><i></i><b>· ·</b></div>
+      <strong>Your agents will grow here</strong>
+      <span>Start Claude, Codex, or OpenCode in a new VS Code terminal.</span>
+    </section>
+  </main>
+  <button class="compact-bar" data-action="expand" title="Expand Agent Garden">
+    <span class="compact-brand"><i></i>Agent garden</span>
+    <span id="compact-summary" class="compact-summary"></span>
+    <span class="expand-mark">⌃</span>
+  </button>
+  <script src="../out/desktop/renderer.js"></script>
+</body>
+</html>

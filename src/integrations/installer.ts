@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import * as vscode from 'vscode';
 
 const CLAUDE_MARKER = 'agent-garden-claude-hook.cjs';
+const CODEX_MARKER = 'agent-garden-codex-hook.cjs';
 const OPENCODE_MARKER = 'Agent Garden OpenCode bridge';
 const CLAUDE_EVENTS = [
   'SessionStart',
@@ -17,6 +18,14 @@ const CLAUDE_EVENTS = [
   'Stop',
   'StopFailure',
   'SessionEnd',
+] as const;
+const CODEX_EVENTS = [
+  'SessionStart',
+  'UserPromptSubmit',
+  'PreToolUse',
+  'PermissionRequest',
+  'PostToolUse',
+  'Stop',
 ] as const;
 
 interface JsonObject {
@@ -80,6 +89,38 @@ export async function uninstallClaudeAdapter(): Promise<string> {
   settings.hooks = hooks;
   await writeJsonWithBackup(settingsPath, settings);
   return settingsPath;
+}
+
+export async function installCodexAdapter(context: vscode.ExtensionContext): Promise<string> {
+  const hooksPath = path.join(os.homedir(), '.codex', 'hooks.json');
+  const bridgePath = path.join(os.homedir(), '.agent-garden', CODEX_MARKER);
+  await fs.mkdir(path.dirname(bridgePath), { recursive: true });
+  await fs.copyFile(path.join(context.extensionPath, 'media', 'integrations', CODEX_MARKER), bridgePath);
+
+  const config = await readJsonObject(hooksPath);
+  const hooks = asObject(config.hooks);
+  const command = `node "${bridgePath.replaceAll('"', '\\"')}"`;
+  for (const eventName of CODEX_EVENTS) {
+    const groups = asHookGroups(hooks[eventName]);
+    if (!groups.some((group) => group.hooks?.some((hook) => hook.command?.includes(CODEX_MARKER)))) {
+      groups.push({ hooks: [{ type: 'command', command, timeout: 5 }] });
+    }
+    hooks[eventName] = groups;
+  }
+  config.description = 'User-level lifecycle hooks, including Agent Garden session events.';
+  config.hooks = hooks;
+  await writeJsonWithBackup(hooksPath, config);
+  return hooksPath;
+}
+
+export async function uninstallCodexAdapter(): Promise<string> {
+  const hooksPath = path.join(os.homedir(), '.codex', 'hooks.json');
+  const config = await readJsonObject(hooksPath);
+  const hooks = asObject(config.hooks);
+  removeMarkedHooks(hooks, CODEX_MARKER);
+  config.hooks = hooks;
+  await writeJsonWithBackup(hooksPath, config);
+  return hooksPath;
 }
 
 export async function installOpenCodeAdapter(context: vscode.ExtensionContext): Promise<string> {
@@ -161,4 +202,20 @@ function asHookGroups(value: unknown): ClaudeHookGroup[] {
   return Array.isArray(value)
     ? value.filter((item): item is ClaudeHookGroup => Boolean(item && typeof item === 'object'))
     : [];
+}
+
+function removeMarkedHooks(hooks: JsonObject, marker: string): void {
+  for (const [eventName, rawGroups] of Object.entries(hooks)) {
+    const groups = asHookGroups(rawGroups)
+      .map((group) => ({
+        ...group,
+        hooks: group.hooks?.filter((hook) => !hook.command?.includes(marker)),
+      }))
+      .filter((group) => (group.hooks?.length ?? 0) > 0);
+    if (groups.length > 0) {
+      hooks[eventName] = groups;
+    } else {
+      delete hooks[eventName];
+    }
+  }
 }

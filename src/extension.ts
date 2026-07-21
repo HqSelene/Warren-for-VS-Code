@@ -6,8 +6,10 @@ import { SessionRegistry } from './core/session-registry';
 import type { AgentSession, WindowDescriptor } from './core/types';
 import {
   installClaudeAdapter,
+  installCodexAdapter,
   installOpenCodeAdapter,
   uninstallClaudeAdapter,
+  uninstallCodexAdapter,
   uninstallOpenCodeAdapter,
 } from './integrations/installer';
 import { TerminalDiscovery } from './terminal/discovery';
@@ -31,6 +33,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     const label = `${agentLabel(next)} · ${next.workspaceName}`;
     if (next.state === 'needsYou') {
       void vscode.window.showWarningMessage(`${label} needs you: ${next.reason ?? 'Attention required'}`);
+    } else if (next.state === 'error') {
+      void vscode.window.showErrorMessage(`${label} error: ${next.reason ?? 'Agent failed'}`);
     } else if (next.state === 'done') {
       void vscode.window.showInformationMessage(`${label} finished.`);
     }
@@ -179,6 +183,32 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         void vscode.window.showErrorMessage(`Could not install OpenCode adapter: ${errorMessage(error)}`);
       }
     }),
+    vscode.commands.registerCommand('agentGarden.installCodexAdapter', async () => {
+      const answer = await vscode.window.showInformationMessage(
+        'Install Agent Garden lifecycle hooks into your user-level Codex hooks.json?',
+        { modal: true },
+        'Install',
+      );
+      if (answer !== 'Install') {
+        return;
+      }
+      try {
+        const location = await installCodexAdapter(context);
+        void vscode.window.showInformationMessage(
+          `Codex adapter installed. Restart Codex, then review it with /hooks. (${location})`,
+        );
+      } catch (error) {
+        void vscode.window.showErrorMessage(`Could not install Codex adapter: ${errorMessage(error)}`);
+      }
+    }),
+    vscode.commands.registerCommand('agentGarden.uninstallCodexAdapter', async () => {
+      try {
+        await uninstallCodexAdapter();
+        void vscode.window.showInformationMessage('Codex adapter removed.');
+      } catch (error) {
+        void vscode.window.showErrorMessage(`Could not remove Codex adapter: ${errorMessage(error)}`);
+      }
+    }),
     vscode.commands.registerCommand('agentGarden.uninstallOpenCodeAdapter', async () => {
       try {
         await uninstallOpenCodeAdapter();
@@ -201,11 +231,16 @@ function updateStatusBar(
   sessions: readonly AgentSession[],
 ): void {
   const needsYou = sessions.filter((session) => session.state === 'needsYou').length;
+  const errors = sessions.filter((session) => session.state === 'error').length;
   const working = sessions.filter((session) => session.state === 'working').length;
-  statusBar.text = needsYou > 0
+  statusBar.text = errors > 0
+    ? `$(error) ${errors} error · ${needsYou} need you`
+    : needsYou > 0
     ? `$(bell) ${needsYou} need you · ${working} working`
     : `$(hubot) ${working} working`;
-  statusBar.backgroundColor = needsYou > 0
+  statusBar.backgroundColor = errors > 0
+    ? new vscode.ThemeColor('statusBarItem.errorBackground')
+    : needsYou > 0
     ? new vscode.ThemeColor('statusBarItem.warningBackground')
     : undefined;
 }

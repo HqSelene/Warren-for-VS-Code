@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="32" x2="448" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#262927"/>
+      <stop offset="1" stop-color="#121412"/>
+    </linearGradient>
+    <linearGradient id="pet" x1="160" y1="130" x2="360" y2="390" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#73E1BA"/>
+      <stop offset="1" stop-color="#43C79A"/>
+    </linearGradient>
+  </defs>
+  <rect x="28" y="28" width="456" height="456" rx="118" fill="url(#bg)"/>
+  <rect x="29" y="29" width="454" height="454" rx="117" fill="none" stroke="#555A56" stroke-width="6"/>
+  <path d="M157 203c0-61 10-105 35-105 30 0 43 54 44 103h40c2-49 15-103 45-103 25 0 35 44 35 105 37 28 58 70 58 119 0 89-61 126-158 126S98 411 98 322c0-49 21-91 59-119Z" fill="url(#pet)"/>
+  <ellipse cx="207" cy="294" rx="18" ry="20" fill="#21312D"/>
+  <ellipse cx="305" cy="294" rx="18" ry="20" fill="#21312D"/>
+  <path d="M226 350c18 14 42 14 60 0" fill="none" stroke="#21312D" stroke-width="11" stroke-linecap="round"/>
+  <path d="M363 112c32-3 55-20 66-52 7 34-2 62-32 80-14 8-29 11-46 9 5-12 9-24 12-37Z" fill="#94D858"/>
+  <circle cx="398" cy="116" r="8" fill="#D8FFA9" opacity=".7"/>
+</svg>

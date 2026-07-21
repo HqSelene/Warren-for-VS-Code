@@ -74,16 +74,6 @@ export class TerminalDiscovery implements vscode.Disposable {
     this.terminalIds.set(terminal, terminalId);
     this.terminalsById.set(terminalId, terminal);
 
-    if (agent !== 'unknown') {
-      this.registry.upsert({
-        ...this.baseSession(terminalId, terminal, agent, source),
-        state: 'unknown',
-        reason: 'Detected terminal; waiting for a state signal',
-        confidence: 'inferred',
-        updatedAt: Date.now(),
-      });
-    }
-
     return terminalId;
   }
 

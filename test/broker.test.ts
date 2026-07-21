@@ -93,7 +93,7 @@ test('broker aggregates two windows and routes a focus command', async () => {
     assert.equal(receivedEvent?.eventType, 'PermissionRequest');
     assert.equal(receivedEvent?.externalSessionId, 'claude-real-session');
 
-    await runClaudeBridge({
+    await runHookBridge('agent-garden-claude-hook.cjs', {
       hook_event_name: 'Stop',
       session_id: 'claude-real-session',
       cwd: process.cwd(),
@@ -103,6 +103,17 @@ test('broker aggregates two windows and routes a focus command', async () => {
     await wait(150);
     assert.equal(receivedEvent?.eventType, 'Stop');
     assert.equal(receivedEvent?.preview, 'Refactor the broker and keep all tests green.');
+
+    await runHookBridge('agent-garden-codex-hook.cjs', {
+      hook_event_name: 'UserPromptSubmit',
+      session_id: 'codex-real-session',
+      cwd: process.cwd(),
+      prompt: '  Build the floating window\n with animated agent pets.  ',
+    });
+    second.publishNow();
+    await wait(150);
+    assert.equal(receivedEvent?.agent, 'codex');
+    assert.equal(receivedEvent?.preview, 'Build the floating window with animated agent pets.');
 
     await runOpenCodePlugin({
       type: 'session.status',
@@ -203,11 +214,11 @@ async function runOpenCodePrompt(): Promise<void> {
   }
 }
 
-function runClaudeBridge(input: unknown): Promise<void> {
+function runHookBridge(filename: string, input: unknown): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn(
       process.execPath,
-      [path.join(process.cwd(), 'media', 'integrations', 'agent-garden-claude-hook.cjs')],
+      [path.join(process.cwd(), 'media', 'integrations', filename)],
       {
         stdio: ['pipe', 'pipe', 'pipe'],
         env: { ...process.env, AGENT_GARDEN_BROKER_PORT: String(TEST_PORT) },

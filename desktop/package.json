@@ -1,0 +1,5 @@
+{
+  "name": "agent-garden-desktop",
+  "private": true,
+  "main": "../out/desktop/main.js"
+}

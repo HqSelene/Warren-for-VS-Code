@@ -2,19 +2,20 @@
 
 ## Purpose
 
-AgentTool is an early-stage product concept for helping developers see which AI coding CLI session currently needs their attention, without replacing their existing VS Code terminal workflow.
+Agent Garden is a desktop companion and VS Code bridge that helps developers see what multiple AI coding CLI sessions are doing and which one needs attention, without replacing their terminal workflow.
 
 ## Main Parts
 
 - VS Code extension: discovers relevant integrated terminals and provides in-editor status and navigation.
-- Agent adapters: official Claude Code Hooks and an OpenCode Plugin normalize real permission, work, completion, and failure events. Codex remains shell-lifecycle-only in the MVP.
+- Desktop companion: an Electron, always-on-top, frameless floating window with workspace grouping, animated pets, terminal focus actions, and a collapsible status capsule.
+- Agent adapters: official Claude Code Hooks, Codex lifecycle Hooks, and an OpenCode Plugin normalize real prompts, permissions, work, completion, and failure events.
 - Embedded loopback broker: the first active extension window owns a local-only broker and other windows connect as clients to aggregate sessions and route focus commands.
-- Presentation modes: a compact utility view and an optional pet-themed visual layer, both limited to real detected sessions.
+- Presentation modes: a full pet dashboard and a compact status capsule, both limited to real detected sessions.
 
 ## Key Workflows
 
 - Detect AI coding agents already running in VS Code integrated terminals.
-- Group sessions by attention state: Needs You, Working, Done, and Error/Unknown.
+- Group sessions by attention state: Needs You, Error, Working, and Done.
 - Click a session to focus its original VS Code window and terminal.
 - Notify only on meaningful state transitions such as permission required or completion.
 - Show a single-line, locally transported preview of the latest user instruction so each session is identifiable at a glance.
@@ -28,8 +29,8 @@ AgentTool is an early-stage product concept for helping developers see which AI 
 - The extension API is scoped to the current VS Code window, so cross-window attention and navigation require coordination between extension instances through a local broker.
 - Avoid expanding the first release into orchestration, worktree management, analytics, or code review.
 - Validate extension API limitations before committing to automatic discovery across terminals and windows.
-- For the OpenAI Build Week submission, target the Developer Tools track and prioritize a runnable, judge-testable VS Code extension over the full desktop companion architecture.
-- Provide a prebuilt VSIX, document supported platforms, and give judges a concise real-session test path.
+- For the OpenAI Build Week submission, target the Developer Tools track and provide both a runnable desktop companion and its VS Code bridge.
+- Provide a prebuilt portable Windows executable and VSIX, document supported platforms, and give judges a concise real-session test path.
 
 ## Recent Major Changes
 
@@ -39,3 +40,6 @@ AgentTool is an early-stage product concept for helping developers see which AI 
 - Build Week MVP implemented: installable TypeScript extension, four-state model, terminal discovery/focus, cross-window broker, Utility/Garden views, notifications, tests, and VSIX packaging.
 - Real Claude Code and OpenCode adapters implemented: local event bridges feed the loopback broker, route by VS Code window ID, bind by working directory/external session ID, drive confirmed states, and carry only a short user-instruction preview. Safe install/uninstall commands preserve a Claude settings backup.
 - Demo Mode removed; ended agent processes now disappear immediately, and real Claude/OpenCode sessions display a locally transported one-line user-instruction preview.
+- Electron desktop companion added with an always-on-top frameless window, CSS-drawn animated pets, workspace grouping, click-to-focus, dynamic sizing, and a compact status capsule.
+- Codex lifecycle adapter added from official user-level hooks, enabling real GPT · Codex prompt previews and Working/Needs You/Done states after hook trust approval.
+- Visible state model finalized as Working, Needs You, Done, and Error; unconfirmed name-only terminals remain hidden and ended processes are removed.

@@ -1,0 +1,19 @@
+appId: com.agentgarden.desktop
+productName: Agent Garden
+directories:
+  output: release
+files:
+  - out/desktop/**/*
+  - out/src/broker/**/*
+  - out/src/core/**/*
+  - desktop/index.html
+  - desktop/styles.css
+  - build/icon.png
+  - media/icon.svg
+extraMetadata:
+  main: out/desktop/main.js
+win:
+  icon: build/icon.png
+  target:
+    - portable
+  artifactName: Agent-Garden-${version}-portable.${ext}

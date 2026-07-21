@@ -1,4 +1,4 @@
-export type AttentionState = 'working' | 'needsYou' | 'done' | 'unknown';
+export type AttentionState = 'working' | 'needsYou' | 'done' | 'error';
 
 export type Confidence = 'confirmed' | 'inferred' | 'unknown';
 
