@@ -1,6 +1,8 @@
-# Agent Garden
+# Warren for VS Code
 
-Agent Garden is a cute always-on-top desktop companion for real CLI coding agents running across multiple VS Code windows. It shows what each Claude, GPT · Codex, or OpenCode session is doing, which one needs attention, and lets you jump back to the originating terminal.
+**All your coding agents, at a glance.**
+
+Warren is a cute always-on-top desktop companion for real CLI coding agents running across multiple VS Code windows. It shows what each Claude, GPT · Codex, or OpenCode session is doing, which one needs attention, and lets you jump back to the originating terminal.
 
 ## What it does
 
@@ -33,9 +35,9 @@ Build the Windows installer:
 npm.cmd run desktop:pack
 ```
 
-The installer is generated under `release/` as `Agent-Garden-Setup-0.0.1.exe`. Running it once installs the desktop companion, VS Code bridge, and bundled Claude, Codex, and OpenCode adapters.
+The installer is generated under `release/` as `Warren-Setup-0.0.1.exe`. Running it once installs the desktop companion, VS Code bridge, and bundled Claude, Codex, and OpenCode adapters.
 
-To remove Agent Garden, use the normal Windows path **Settings → Apps → Installed apps → Agent Garden → Uninstall**. The uninstaller removes the Agent Garden VS Code extension, its Claude/Codex hook entries, the OpenCode plugin, bridge files, and app cache. It preserves the `.agent-garden.bak` backups and unrelated hooks/configuration.
+To remove Warren, use the normal Windows path **Settings → Apps → Installed apps → Warren → Uninstall**. The uninstaller removes the Warren VS Code extension, its Claude/Codex hook entries, the OpenCode plugin, bridge files, and app cache. It preserves the `.agent-garden.bak` backups and unrelated hooks/configuration.
 
 ## Install the VS Code bridge
 
@@ -45,17 +47,17 @@ Build the VSIX:
 npm.cmd run package
 ```
 
-The setup executable installs `agent-garden-0.0.1.vsix` automatically. Reload VS Code and open a new integrated terminal. The extension injects a per-window routing ID, discovers agent commands, publishes sessions to the broker, and handles click-to-focus requests from the desktop companion.
+The setup executable installs the Warren VS Code bridge automatically. Reload VS Code and open a new integrated terminal. The extension injects a per-window routing ID, discovers agent commands, publishes sessions to the broker, and handles click-to-focus requests from the desktop companion.
 
 ## Connect real agents
 
 Run these commands from the VS Code Command Palette:
 
-- **Agent Garden: Install Claude Code Adapter**
-- **Agent Garden: Install Codex Adapter**
-- **Agent Garden: Install OpenCode Adapter**
+- **Warren: Install Claude Code Adapter**
+- **Warren: Install Codex Adapter**
+- **Warren: Install OpenCode Adapter**
 
-Restart the corresponding CLI after installing an adapter. Codex requires one additional trust step: open `/hooks`, review the Agent Garden user hook, and trust it. This is Codex's standard trust flow for non-managed command hooks.
+Restart the corresponding CLI after installing an adapter. Codex requires one additional trust step: open `/hooks`, review the Warren user hook, and trust it. This is Codex's standard trust flow for non-managed command hooks.
 
 Adapter locations:
 
@@ -63,7 +65,7 @@ Adapter locations:
 - Codex: merges hooks into `~/.codex/hooks.json`.
 - OpenCode: installs `~/.config/opencode/plugins/agent-garden.js`.
 
-The installers preserve existing settings and create an `.agent-garden.bak` backup before the first modification. Matching uninstall commands remove only Agent Garden entries.
+The installers preserve existing settings and create an `.agent-garden.bak` backup before the first modification. Matching uninstall commands remove only Warren entries.
 
 ## Real event mapping
 
@@ -87,7 +89,7 @@ The current Build Week package is tested on Windows with desktop VS Code. The ex
 
 ## How Codex and GPT-5.6 were used
 
-Codex with GPT-5.6 was the primary engineering collaborator. It helped define the attention model, validate official Claude Code/OpenCode/Codex lifecycle integrations, implement the extension, adapters, local broker and Electron companion, visually verify the floating UI, and build the test and packaging workflows. Agent Garden does not add a runtime model call.
+Codex with GPT-5.6 was the primary engineering collaborator. It helped define the attention model, validate official Claude Code/OpenCode/Codex lifecycle integrations, implement the extension, adapters, local broker and Electron companion, visually verify the floating UI, and build the test and packaging workflows. Warren does not add a runtime model call.
 
 ## License
 

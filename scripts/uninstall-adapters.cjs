@@ -113,7 +113,7 @@ function removeMarkedHooks(filePath, marker, key) {
       fs.writeFileSync(filePath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
       result[key] = `removed ${removed} hook${removed === 1 ? '' : 's'}`;
     } else {
-      result[key] = 'no Agent Garden hooks';
+      result[key] = 'no Warren hooks';
     }
   } catch (error) {
     result[key] = 'not removed';
@@ -158,5 +158,5 @@ function removeBridges() {
   } catch (error) {
     result.warnings.push(`Could not remove empty bridge directory: ${error.message}`);
   }
-  result.bridges = removed > 0 ? `removed ${removed} bridge${removed === 1 ? '' : 's'}` : 'no Agent Garden bridges';
+  result.bridges = removed > 0 ? `removed ${removed} bridge${removed === 1 ? '' : 's'}` : 'no Warren bridges';
 }

@@ -139,11 +139,11 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
 </head>
 <body>
   <div class="header">
-    <div class="brand"><span>🌿</span><span>Agent Garden</span></div>
+    <div class="brand"><span>🌿</span><span>Warren</span></div>
     <div class="connection" title="${this.brokerConnected ? 'Cross-window broker connected' : 'Broker reconnecting'}"></div>
   </div>
   <div class="toolbar">
-    <button class="secondary" data-command="toggleMode">${this.mode === 'garden' ? 'Utility Mode' : 'Garden Mode'}</button>
+    <button class="secondary" data-command="toggleMode">${this.mode === 'garden' ? 'Utility Mode' : 'Warren Mode'}</button>
     <button class="secondary" data-command="refresh">Refresh</button>
   </div>
   ${content}

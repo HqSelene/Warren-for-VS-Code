@@ -28,8 +28,8 @@ export async function runFirstLaunchSetup(window: BrowserWindow): Promise<void> 
     await fs.writeFile(markerPath, `${JSON.stringify({ version: SETUP_VERSION, installedAt: Date.now() })}\n`, 'utf8');
     await dialog.showMessageBox(window, {
       type: 'info',
-      title: 'Agent Garden setup complete',
-      message: 'Agent Garden is ready.',
+      title: 'Warren setup complete',
+      message: 'Warren is ready.',
       detail: 'The VS Code bridge and Claude, Codex, and OpenCode adapters were installed. Reload VS Code, then open a new terminal. Codex users should review and trust the hook with /hooks.',
       buttons: ['Got it'],
     });
@@ -38,9 +38,9 @@ export async function runFirstLaunchSetup(window: BrowserWindow): Promise<void> 
 
   await dialog.showMessageBox(window, {
     type: 'warning',
-    title: 'Agent Garden needs one more step',
+    title: 'Warren needs one more step',
     message: 'Automatic setup could not finish.',
-    detail: `${result.errors.join('\n')}\n\nYou can still install agent-garden-0.0.1.vsix manually from the project folder.`,
+    detail: `${result.errors.join('\n')}\n\nYou can still install the Warren VSIX manually from the project folder.`,
     buttons: ['Got it'],
   });
 }

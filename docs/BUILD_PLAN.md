@@ -1,4 +1,4 @@
-# Agent Garden Build Plan
+# Warren for VS Code Build Plan
 
 ## 1. Build Week Goal
 
@@ -25,10 +25,10 @@ The demo must show multiple VS Code windows, multiple Claude/Codex terminal sess
 
 1. Install a prebuilt VSIX.
 2. Open two VS Code windows.
-3. Start Agent Garden Demo in each window, or run supported CLI agents.
+3. Start Warren in each window, or run supported CLI agents.
 4. See all sessions grouped by `Needs You`, `Working`, `Done`, and `Unknown`.
 5. Click a session to reveal its originating workspace and terminal.
-6. Switch between Utility and Garden presentation modes.
+6. Switch between Utility and Warren presentation modes.
 
 ## 3. Hackathon MVP
 
@@ -40,7 +40,7 @@ The demo must show multiple VS Code windows, multiple Claude/Codex terminal sess
 - A normalized session and state model.
 - Cross-window registry through a loopback-only local broker.
 - A compact sidebar Webview View.
-- Utility Mode and a lightweight Garden Mode using the same data.
+- Utility Mode and a lightweight Warren Mode using the same data.
 - Click-to-focus for the originating terminal, with best-effort cross-window activation.
 - Notifications for transitions into `needsYou` and `done`.
 - Deterministic Demo Mode that requires no agent login or API key.
@@ -68,8 +68,8 @@ flowchart LR
     E["Demo / Claude / Codex adapters"] --> C
     B --> A
     B --> C
-    A --> F["Sidebar: Utility / Garden"]
-    C --> G["Sidebar: Utility / Garden"]
+    A --> F["Sidebar: Utility / Warren"]
+    C --> G["Sidebar: Utility / Warren"]
 ```
 
 ### Extension responsibilities
@@ -188,10 +188,10 @@ Acceptance: a judge can see the complete product loop within 30 seconds.
 
 Acceptance: two VS Code windows display the same combined session list; a focus command reaches the correct owner.
 
-### Milestone 4 — Garden presentation and notifications
+### Milestone 4 — Warren presentation and notifications
 
 - Add small CSS-only state characters/animations.
-- Add Utility/Garden toggle.
+- Add Utility/Warren toggle.
 - Notify only on transitions into `needsYou` or `done`.
 
 Acceptance: both modes use identical session data and notifications do not repeat on every heartbeat.
@@ -214,7 +214,7 @@ Build in this order and stop adding features when the remaining submission work 
 3. Current-window focus.
 4. Cross-window registry.
 5. Cross-window activation.
-6. Garden Mode polish.
+6. Warren Mode polish.
 
 If cross-window OS activation is unreliable, keep broker routing working, label activation as best-effort, and demonstrate the supported Windows path honestly. Never sacrifice the installable VSIX, README, or video for extra animation.
 

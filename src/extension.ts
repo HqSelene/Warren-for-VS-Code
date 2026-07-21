@@ -98,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     onFocusCommand: async (command) => {
       if (discovery.focus(command.terminalId)) {
         await vscode.commands.executeCommand('workbench.action.terminal.focus');
-        void vscode.window.showInformationMessage('Agent Garden focused the requested terminal.');
+        void vscode.window.showInformationMessage('Warren focused the requested terminal.');
       }
     },
     onAgentEvent: (event) => {
@@ -113,10 +113,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.StatusBarAlignment.Left,
     20,
   );
-  statusBar.name = 'Agent Garden';
+  statusBar.name = 'Warren';
   statusBar.command = 'agentGarden.open';
-  statusBar.text = '$(hubot) Agent Garden';
-  statusBar.tooltip = 'Open Agent Garden';
+  statusBar.text = '$(hubot) Warren';
+  statusBar.tooltip = 'Open Warren';
   statusBar.show();
 
   context.subscriptions.push(
@@ -142,7 +142,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('agentGarden.refresh', () => broker.publishNow()),
     vscode.commands.registerCommand('agentGarden.installClaudeAdapter', async () => {
       const answer = await vscode.window.showInformationMessage(
-        'Install Agent Garden hooks into Claude Code settings? A backup will be created.',
+        'Install Warren hooks into Claude Code settings? A backup will be created.',
         { modal: true },
         'Install',
       );
@@ -168,7 +168,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     }),
     vscode.commands.registerCommand('agentGarden.installOpenCodeAdapter', async () => {
       const answer = await vscode.window.showInformationMessage(
-        'Install the Agent Garden plugin into your global OpenCode plugins folder?',
+        'Install the Warren plugin into your global OpenCode plugins folder?',
         { modal: true },
         'Install',
       );
@@ -186,7 +186,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     }),
     vscode.commands.registerCommand('agentGarden.installCodexAdapter', async () => {
       const answer = await vscode.window.showInformationMessage(
-        'Install Agent Garden lifecycle hooks into your user-level Codex hooks.json?',
+        'Install Warren lifecycle hooks into your user-level Codex hooks.json?',
         { modal: true },
         'Install',
       );

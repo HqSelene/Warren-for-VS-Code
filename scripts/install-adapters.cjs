@@ -67,7 +67,7 @@ for (const eventName of codexEvents) {
   }
   codexHooks[eventName] = groups;
 }
-codexConfig.description = 'User-level lifecycle hooks, including Agent Garden session events.';
+codexConfig.description = 'User-level lifecycle hooks, including Warren session events.';
 codexConfig.hooks = codexHooks;
 fs.writeFileSync(codexHooksPath, `${JSON.stringify(codexConfig, null, 2)}\n`, 'utf8');
 

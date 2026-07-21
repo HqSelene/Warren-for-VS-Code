@@ -1,9 +1,9 @@
 {
   "name": "agent-garden",
-  "displayName": "Agent Garden",
-  "description": "See which CLI coding agent needs you across your VS Code windows.",
+  "displayName": "Warren",
+  "description": "Warren for VS Code: All your coding agents, at a glance.",
   "version": "0.0.1",
-  "author": "Agent Garden",
+  "author": "Warren",
   "publisher": "agent-garden-labs",
   "license": "MIT",
   "engines": {
@@ -40,7 +40,7 @@
       "activitybar": [
         {
           "id": "agentGarden",
-          "title": "Agent Garden",
+          "title": "Warren",
           "icon": "media/icon.svg"
         }
       ]
@@ -57,39 +57,39 @@
     "commands": [
       {
         "command": "agentGarden.open",
-        "title": "Agent Garden: Open"
+        "title": "Warren: Open"
       },
       {
         "command": "agentGarden.toggleMode",
-        "title": "Agent Garden: Toggle Utility/Garden Mode"
+        "title": "Warren: Toggle Utility/Warren Mode"
       },
       {
         "command": "agentGarden.refresh",
-        "title": "Agent Garden: Refresh"
+        "title": "Warren: Refresh"
       },
       {
         "command": "agentGarden.installClaudeAdapter",
-        "title": "Agent Garden: Install Claude Code Adapter"
+        "title": "Warren: Install Claude Code Adapter"
       },
       {
         "command": "agentGarden.uninstallClaudeAdapter",
-        "title": "Agent Garden: Uninstall Claude Code Adapter"
+        "title": "Warren: Uninstall Claude Code Adapter"
       },
       {
         "command": "agentGarden.installOpenCodeAdapter",
-        "title": "Agent Garden: Install OpenCode Adapter"
+        "title": "Warren: Install OpenCode Adapter"
       },
       {
         "command": "agentGarden.installCodexAdapter",
-        "title": "Agent Garden: Install Codex Adapter"
+        "title": "Warren: Install Codex Adapter"
       },
       {
         "command": "agentGarden.uninstallCodexAdapter",
-        "title": "Agent Garden: Uninstall Codex Adapter"
+        "title": "Warren: Uninstall Codex Adapter"
       },
       {
         "command": "agentGarden.uninstallOpenCodeAdapter",
-        "title": "Agent Garden: Uninstall OpenCode Adapter"
+        "title": "Warren: Uninstall OpenCode Adapter"
       }
     ],
     "menus": {

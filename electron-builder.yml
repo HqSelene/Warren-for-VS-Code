@@ -1,5 +1,5 @@
 appId: com.agentgarden.desktop
-productName: Agent Garden
+productName: Warren
 directories:
   output: release
 files:
@@ -27,7 +27,7 @@ win:
   icon: build/icon.png
   target:
     - nsis
-  artifactName: Agent-Garden-Setup-${version}.${ext}
+  artifactName: Warren-Setup-${version}.${ext}
 nsis:
   include: build/installer.nsh
   oneClick: true
@@ -36,4 +36,4 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
   runAfterFinish: true
-  shortcutName: Agent Garden
+  shortcutName: Warren

@@ -107,7 +107,7 @@ export async function installCodexAdapter(context: vscode.ExtensionContext): Pro
     }
     hooks[eventName] = groups;
   }
-  config.description = 'User-level lifecycle hooks, including Agent Garden session events.';
+  config.description = 'User-level lifecycle hooks, including Warren session events.';
   config.hooks = hooks;
   await writeJsonWithBackup(hooksPath, config);
   return hooksPath;

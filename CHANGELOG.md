@@ -2,13 +2,13 @@
 
 ## 0.0.1
 
-- Added one-click Windows setup and uninstall cleanup for the VS Code extension, Agent Garden hooks, OpenCode bridge, and desktop cache while preserving user backups and unrelated configuration.
+- Added one-click Windows setup and uninstall cleanup for the VS Code extension, Warren hooks, OpenCode bridge, and desktop cache while preserving user backups and unrelated configuration.
 - Fixed startup false positives: a newly launched CLI is shown as waiting for your instruction until an adapter confirms active work.
 - Fixed cross-window Agent state bleed by routing adapter events to one matching VS Code window and ignoring ambiguous unscoped events.
 - Added the four-state agent attention model.
 - Added Claude, Codex, and OpenCode shell-command discovery.
 - Added loopback-only cross-window session aggregation and focus routing.
-- Added Utility Mode, Garden Mode, transition notifications, and status bar counts.
+- Added Utility Mode, Warren Mode, transition notifications, and status bar counts.
 - Added unit and broker integration tests plus VSIX packaging.
 - Added real Claude Code Hook and OpenCode Plugin adapters for working, permission/question, completion, and failure events.
 - Added per-window terminal routing metadata and safe adapter install/uninstall commands.
