@@ -5,7 +5,7 @@ import { promisify } from 'node:util';
 import { app, dialog, type BrowserWindow } from 'electron';
 
 const execFileAsync = promisify(execFile);
-const SETUP_VERSION = 1;
+const SETUP_VERSION = 2;
 
 interface SetupResult {
   bridgeInstalled: boolean;

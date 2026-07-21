@@ -6,6 +6,7 @@
 - Fixed startup false positives: a newly launched CLI is shown as waiting for your instruction until an adapter confirms active work.
 - Fixed cross-window Agent state bleed by routing adapter events to one matching VS Code window and ignoring ambiguous unscoped events.
 - Fixed Windows first-run setup when VS Code is installed under a path containing spaces.
+- Bumped the first-run setup marker so existing installs retry the repaired bridge setup once.
 - Added the four-state agent attention model.
 - Added Claude, Codex, and OpenCode shell-command discovery.
 - Added loopback-only cross-window session aggregation and focus routing.
