@@ -48,3 +48,4 @@ Warren for VS Code is a desktop companion and VS Code bridge that helps develope
 - Windows packaging refined with bundled first-run setup and custom uninstall cleanup for the VS Code extension, Warren hooks, OpenCode plugin, bridge files, and app cache.
 - Initial shell detection now shows a session as Needs You / “Ready for your instruction” until a real Claude Hook, Codex Hook, or OpenCode Plugin event confirms active work.
 - Cross-window event routing now resolves unscoped adapter events by unique external session ID or workspace path and drops ambiguous events instead of mirroring one Agent's state into another window.
+- Windows first-run setup now invokes a space-safe `code.cmd` command so the bundled VS Code bridge installs correctly from paths such as `Program Files`.
