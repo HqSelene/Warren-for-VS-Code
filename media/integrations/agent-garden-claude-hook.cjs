@@ -16,11 +16,12 @@ process.stdin.on('end', () => {
       notificationType: text(raw.notification_type),
       toolName: text(raw.tool_name),
       reason: text(raw.message || raw.error),
+      preview: oneLine(raw.prompt),
       timestamp: Date.now(),
     });
     const request = http.request({
       host: '127.0.0.1',
-      port: 47832,
+      port: Number(process.env.AGENT_GARDEN_BROKER_PORT || 47832),
       path: '/agent-event',
       method: 'POST',
       timeout: 500,
@@ -43,4 +44,10 @@ process.stdin.on('end', () => {
 
 function text(value) {
   return typeof value === 'string' && value ? value.slice(0, 500) : undefined;
+}
+
+function oneLine(value) {
+  return typeof value === 'string'
+    ? value.replace(/\s+/g, ' ').trim().slice(0, 160) || undefined
+    : undefined;
 }

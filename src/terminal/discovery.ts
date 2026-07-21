@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import * as vscode from 'vscode';
-import { detectAgent, executionEndState, externalEventState } from '../core/state-machine';
+import { detectAgent, externalEventState } from '../core/state-machine';
 import type {
   AgentKind,
   AgentSession,
@@ -55,19 +55,7 @@ export class TerminalDiscovery implements vscode.Disposable {
         if (!knownSessionId && agent === 'unknown') {
           return;
         }
-        const sessionId = knownSessionId ?? this.trackTerminal(event.terminal, agent, 'shell');
-        const previous = this.registry.get(sessionId);
-        const end = executionEndState(event.exitCode);
-        this.registry.upsert({
-          ...this.baseSession(
-            sessionId,
-            event.terminal,
-            previous?.agent ?? agent,
-            previous?.source ?? 'shell',
-          ),
-          ...end,
-          updatedAt: Date.now(),
-        });
+        this.forgetTerminal(event.terminal, knownSessionId);
       }),
     );
   }
@@ -142,6 +130,7 @@ export class TerminalDiscovery implements vscode.Disposable {
       source: 'hook',
       cwd: event.cwd ?? target.cwd,
       externalSessionId: event.externalSessionId ?? target.externalSessionId,
+      preview: event.preview ?? target.preview,
       updatedAt: event.timestamp,
     });
     return true;
@@ -161,20 +150,15 @@ export class TerminalDiscovery implements vscode.Disposable {
   }
 
   private handleClose(terminal: vscode.Terminal): void {
-    const sessionId = this.terminalIds.get(terminal);
+    this.forgetTerminal(terminal);
+  }
+
+  private forgetTerminal(terminal: vscode.Terminal, knownSessionId?: string): void {
+    const sessionId = knownSessionId ?? this.terminalIds.get(terminal);
     if (!sessionId) {
       return;
     }
-    const session = this.registry.get(sessionId);
-    if (session) {
-      this.registry.upsert({
-        ...session,
-        state: 'unknown',
-        reason: 'Terminal closed',
-        confidence: 'confirmed',
-        updatedAt: Date.now(),
-      });
-    }
+    this.registry.remove(sessionId);
     this.terminalIds.delete(terminal);
     this.terminalsById.delete(sessionId);
   }

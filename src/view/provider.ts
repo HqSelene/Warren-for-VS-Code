@@ -7,9 +7,6 @@ export type PresentationMode = 'utility' | 'garden';
 
 export interface DashboardActions {
   focus: (sessionId: string) => void | Promise<void>;
-  startDemo: () => void;
-  advanceDemo: () => void;
-  resetDemo: () => void;
   toggleMode: () => void;
   refresh: () => void;
 }
@@ -36,15 +33,6 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
           if (message.sessionId) {
             void this.actions.focus(message.sessionId);
           }
-          break;
-        case 'startDemo':
-          this.actions.startDemo();
-          break;
-        case 'advanceDemo':
-          this.actions.advanceDemo();
-          break;
-        case 'resetDemo':
-          this.actions.resetDemo();
           break;
         case 'toggleMode':
           this.actions.toggleMode();
@@ -101,7 +89,7 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
     const content = groups || `<div class="empty">
       <div class="empty-icon">🌱</div>
       <strong>No agents detected yet</strong>
-      <p>Start Demo for a complete, account-free walkthrough.</p>
+      <p>Open a new integrated terminal and start Claude, Codex, or OpenCode.</p>
     </div>`;
 
     return `<!doctype html>
@@ -139,7 +127,8 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
     @keyframes ask { to { transform:scale(1.12); } }
     .session-main { min-width:0; }
     .session-title { display:flex; align-items:center; gap:5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .session-meta, .session-reason { margin-top:2px; color:var(--vscode-descriptionForeground); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .session-meta, .session-content { display:block; margin-top:2px; color:var(--vscode-descriptionForeground); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .session-content { color:var(--vscode-foreground); opacity:.82; }
     .confidence { align-self:start; padding:2px 5px; border:1px solid var(--vscode-widget-border); border-radius:999px; color:var(--vscode-descriptionForeground); font-size:9px; text-transform:uppercase; }
     .other { color:var(--vscode-charts-purple); }
     .empty { padding:24px 10px; text-align:center; color:var(--vscode-descriptionForeground); }
@@ -154,10 +143,8 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
     <div class="connection" title="${this.brokerConnected ? 'Cross-window broker connected' : 'Broker reconnecting'}"></div>
   </div>
   <div class="toolbar">
-    <button data-command="startDemo">Start Demo</button>
-    <button data-command="advanceDemo">Advance States</button>
     <button class="secondary" data-command="toggleMode">${this.mode === 'garden' ? 'Utility Mode' : 'Garden Mode'}</button>
-    <button class="secondary" data-command="resetDemo">Reset Demo</button>
+    <button class="secondary" data-command="refresh">Refresh</button>
   </div>
   ${content}
   <div class="footer"><span>${this.sessions.length} sessions</span><span>${this.mode} mode</span></div>
@@ -184,7 +171,7 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
       <span class="session-main">
         <span class="session-title">${escapeHtml(this.agentLabel(session))}</span>
         <span class="session-meta ${isOtherWindow ? 'other' : ''}">${escapeHtml(session.workspaceName)}${isOtherWindow ? ' · other window' : ''}</span>
-        <span class="session-reason">${escapeHtml(session.reason ?? stateLabel(session.state))}</span>
+        <span class="session-content">${escapeHtml(session.preview ? `› ${session.preview}` : session.reason ?? stateLabel(session.state))}</span>
       </span>
       <span class="confidence">${escapeHtml(session.confidence)}</span>
     </button>`;
@@ -220,8 +207,6 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
         return 'Codex';
       case 'opencode':
         return 'OpenCode';
-      case 'demo':
-        return 'Demo Agent';
       default:
         return 'CLI Agent';
     }
@@ -240,4 +225,3 @@ function escapeHtml(value: string): string {
     return entities[character] ?? character;
   });
 }
-

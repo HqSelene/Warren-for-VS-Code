@@ -27,6 +27,7 @@ export interface BrokerClientOptions {
   onFocusCommand: (command: FocusCommand) => void | Promise<void>;
   onAgentEvent?: (event: ExternalAgentEvent) => void | Promise<void>;
   onStatusChange?: (connected: boolean) => void;
+  port?: number;
 }
 
 export class BrokerClient {
@@ -109,7 +110,7 @@ export class BrokerClient {
     }
 
     this.server?.dispose();
-    const candidate = new BrokerServer();
+    const candidate = new BrokerServer(this.options.port);
     const ownsServer = await candidate.start();
     if (ownsServer) {
       this.server = candidate;
@@ -136,7 +137,7 @@ export class BrokerClient {
       const request = http.request(
         {
           host: BROKER_HOST,
-          port: BROKER_PORT,
+          port: this.options.port ?? BROKER_PORT,
           path,
           method,
           timeout: 750,

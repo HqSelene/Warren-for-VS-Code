@@ -9,7 +9,7 @@ Agent Garden is an attention layer for CLI coding agents running across multiple
 - Cross-window aggregation over a loopback-only local broker.
 - Current-window Claude, Codex, and OpenCode shell-command discovery.
 - Click-to-focus terminal routing.
-- Utility Mode, Garden Mode, and a deterministic account-free Demo Mode.
+- Utility Mode and Garden Mode over real detected sessions.
 - Notifications only on meaningful transitions into Needs You or Done.
 
 ## Install a packaged VSIX
@@ -29,7 +29,7 @@ From the VS Code Command Palette, run:
 
 The Claude installer merges Agent Garden command hooks into `~/.claude/settings.json` and creates `settings.json.agent-garden.bak`. The OpenCode installer places a global plugin at `~/.config/opencode/plugins/agent-garden.js`. Both adapters can be removed with their matching uninstall commands.
 
-After installation, reload VS Code and open a **new integrated terminal**, then start `claude` or `opencode`. New terminals inherit a per-window routing ID, which prevents events from another VS Code window being attached to the wrong session. Adapter events contain only state metadata; prompts, tool inputs, terminal output, source code, and credentials are never sent or stored.
+After installation, reload VS Code and open a **new integrated terminal**, then start `claude` or `opencode`. New terminals inherit a per-window routing ID, which prevents events from another VS Code window being attached to the wrong session. The adapter sends state metadata plus a whitespace-normalized preview of the latest user instruction (maximum 160 characters) to the in-memory loopback broker. Full prompts, tool inputs, terminal output, source code, responses, and credentials are not stored.
 
 Real state mappings include:
 
@@ -41,17 +41,16 @@ Real state mappings include:
 - OpenCode `session.idle` -> Done
 - Claude/OpenCode failures -> Needs You with an error reason
 
-## Judge-friendly test path
+## Test path
 
 1. Open Agent Garden.
-2. Select **Start Demo**. Three VS Code terminals are created and registered as demo sessions.
-3. Confirm that Working, Needs You, and Done are visible.
-4. Select a session card and verify that its terminal is revealed.
-5. Select **Advance States** to exercise transitions and notifications.
-6. Toggle **Garden Mode** to view the same data through the pet presentation.
-7. Open a second VS Code window with Agent Garden installed and run Start Demo there to test cross-window aggregation.
-
-Demo Mode never calls an external service and never needs Claude, Codex, OpenCode, or an OpenAI API key.
+2. Open a new integrated terminal and start `claude` or `opencode`.
+3. Submit a task and confirm that its one-line instruction preview appears in Working.
+4. Trigger a permission request and confirm that the session moves to Needs You.
+5. Finish the response and confirm that it moves to Done.
+6. Select the session card and verify that its terminal is revealed.
+7. Exit or kill the agent and confirm that the session disappears.
+8. Repeat in a second VS Code window to test cross-window aggregation.
 
 ## Build from source
 
@@ -74,11 +73,11 @@ The Build Week package is tested on Windows with desktop VS Code. The extension 
 
 ## Status confidence and limitations
 
-- **Confirmed** means an official tool hook/plugin, Demo Adapter, or high-confidence shell event reported the state.
+- **Confirmed** means an official tool hook/plugin or high-confidence shell event reported the state.
 - **Inferred** means a terminal name or lower-confidence shell event suggests an agent.
 - **Unknown** means the adapter is absent, stale, or the terminal lifecycle cannot establish the state.
 
-Codex currently has shell-lifecycle discovery but no runtime adapter in this MVP. Two same-agent terminals launched in the same VS Code window and same working directory can still require a best-recent-session match until they acquire distinct external session IDs. Bringing a background VS Code window to the OS foreground remains platform-dependent.
+Codex currently has shell-lifecycle discovery but no runtime adapter in this MVP. Two same-agent terminals launched in the same VS Code window and same working directory can still require a best-recent-session match until they acquire distinct external session IDs. Exited or killed agent processes are removed instead of retained as Unknown. Bringing a background VS Code window to the OS foreground remains platform-dependent.
 
 ## How Codex and GPT-5.6 were used
 

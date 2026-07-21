@@ -34,30 +34,6 @@ export function detectAgent(commandLine: string): AgentKind {
   return 'unknown';
 }
 
-export function executionEndState(exitCode: number | undefined): {
-  state: AttentionState;
-  reason: string;
-  confidence: Confidence;
-} {
-  if (exitCode === 0) {
-    return { state: 'done', reason: 'Command completed', confidence: 'confirmed' };
-  }
-
-  if (typeof exitCode === 'number') {
-    return {
-      state: 'needsYou',
-      reason: `Command failed with exit code ${exitCode}`,
-      confidence: 'confirmed',
-    };
-  }
-
-  return {
-    state: 'unknown',
-    reason: 'Command ended without a reported exit code',
-    confidence: 'unknown',
-  };
-}
-
 export function sortSessions(sessions: readonly AgentSession[]): AgentSession[] {
   return [...sessions].sort((left, right) => {
     const stateDifference = priority[left.state] - priority[right.state];
@@ -139,6 +115,8 @@ export function externalEventState(event: ExternalAgentEvent): {
           return confirmed('done', 'OpenCode finished responding');
         }
         return undefined;
+      case 'user.prompt':
+        return confirmed('working', 'OpenCode is working');
       case 'session.idle':
         return confirmed('done', 'OpenCode finished responding');
       case 'permission.asked':

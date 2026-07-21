@@ -2,7 +2,6 @@ import assert = require('node:assert/strict');
 import { test } from 'node:test';
 import {
   detectAgent,
-  executionEndState,
   externalEventState,
   shouldNotify,
   sortSessions,
@@ -19,7 +18,7 @@ function session(overrides: Partial<AgentSession> = {}): AgentSession {
     agent: 'codex',
     state: 'working',
     confidence: 'confirmed',
-    source: 'demo',
+    source: 'shell',
     updatedAt: 1,
     ...overrides,
   };
@@ -31,16 +30,6 @@ test('detects supported CLI agents without matching unrelated text', () => {
   assert.equal(detectAgent('npx @openai/codex'), 'codex');
   assert.equal(detectAgent('opencode .'), 'opencode');
   assert.equal(detectAgent('echo codexical'), 'unknown');
-});
-
-test('normalizes shell completion outcomes', () => {
-  assert.deepEqual(executionEndState(0), {
-    state: 'done',
-    reason: 'Command completed',
-    confidence: 'confirmed',
-  });
-  assert.equal(executionEndState(2).state, 'needsYou');
-  assert.equal(executionEndState(undefined).state, 'unknown');
 });
 
 test('sorts needs-you sessions before work, completion, and unknown', () => {
@@ -104,5 +93,9 @@ test('maps real OpenCode plugin events to attention states', () => {
   assert.equal(
     externalEventState(externalEvent({ agent: 'opencode', eventType: 'session.error' }))?.state,
     'needsYou',
+  );
+  assert.equal(
+    externalEventState(externalEvent({ agent: 'opencode', eventType: 'user.prompt' }))?.state,
+    'working',
   );
 });

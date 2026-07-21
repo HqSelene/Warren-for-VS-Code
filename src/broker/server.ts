@@ -32,6 +32,8 @@ export class BrokerServer {
   private readonly agentEvents: ExternalAgentEvent[] = [];
   private nextEventSequence = 1;
 
+  public constructor(private readonly port = BROKER_PORT) {}
+
   public async start(): Promise<boolean> {
     if (this.server) {
       return true;
@@ -57,7 +59,7 @@ export class BrokerServer {
 
       server.once('error', onError);
       server.once('listening', onListening);
-      server.listen(BROKER_PORT, BROKER_HOST);
+      server.listen(this.port, BROKER_HOST);
     });
 
     if (started) {
@@ -79,7 +81,7 @@ export class BrokerServer {
     response: http.ServerResponse,
   ): Promise<void> {
     try {
-      const url = new URL(request.url ?? '/', `http://${BROKER_HOST}:${BROKER_PORT}`);
+      const url = new URL(request.url ?? '/', `http://${BROKER_HOST}:${this.port}`);
       this.cleanup();
 
       if (request.method === 'GET' && url.pathname === '/health') {

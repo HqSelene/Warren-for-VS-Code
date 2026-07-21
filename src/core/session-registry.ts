@@ -1,4 +1,4 @@
-import type { AgentSession, SessionSource } from './types';
+import type { AgentSession } from './types';
 
 type Listener = (sessions: AgentSession[]) => void;
 type TransitionListener = (
@@ -35,20 +35,6 @@ export class SessionRegistry {
     }
   }
 
-  public clearSource(source: SessionSource): void {
-    let changed = false;
-    for (const [sessionId, session] of this.sessions) {
-      if (session.source === source) {
-        this.sessions.delete(sessionId);
-        changed = true;
-      }
-    }
-
-    if (changed) {
-      this.emit();
-    }
-  }
-
   public subscribe(listener: Listener): { dispose(): void } {
     this.listeners.add(listener);
     listener(this.getAll());
@@ -64,4 +50,3 @@ export class SessionRegistry {
     }
   }
 }
-

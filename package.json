@@ -59,18 +59,6 @@
         "title": "Agent Garden: Open"
       },
       {
-        "command": "agentGarden.startDemo",
-        "title": "Agent Garden: Start Demo"
-      },
-      {
-        "command": "agentGarden.advanceDemo",
-        "title": "Agent Garden: Advance Demo States"
-      },
-      {
-        "command": "agentGarden.resetDemo",
-        "title": "Agent Garden: Reset Demo"
-      },
-      {
         "command": "agentGarden.toggleMode",
         "title": "Agent Garden: Toggle Utility/Garden Mode"
       },
@@ -98,25 +86,20 @@
     "menus": {
       "view/title": [
         {
-          "command": "agentGarden.startDemo",
+          "command": "agentGarden.toggleMode",
           "when": "view == agentGarden.panel",
           "group": "navigation@1"
         },
         {
-          "command": "agentGarden.toggleMode",
-          "when": "view == agentGarden.panel",
-          "group": "navigation@2"
-        },
-        {
           "command": "agentGarden.refresh",
           "when": "view == agentGarden.panel",
-          "group": "navigation@3"
+          "group": "navigation@2"
         }
       ]
     }
   },
   "scripts": {
-    "compile": "tsc -p .",
+    "compile": "node scripts/clean-out.cjs && tsc -p .",
     "watch": "tsc -watch -p .",
     "test": "npm run compile && node --test \"out/test/*.test.js\"",
     "check": "npm run compile && npm test",

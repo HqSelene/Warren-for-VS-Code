@@ -2,9 +2,9 @@ export type AttentionState = 'working' | 'needsYou' | 'done' | 'unknown';
 
 export type Confidence = 'confirmed' | 'inferred' | 'unknown';
 
-export type AgentKind = 'claude' | 'codex' | 'opencode' | 'demo' | 'unknown';
+export type AgentKind = 'claude' | 'codex' | 'opencode' | 'unknown';
 
-export type SessionSource = 'shell' | 'hook' | 'demo';
+export type SessionSource = 'shell' | 'hook';
 
 export interface AgentSession {
   sessionId: string;
@@ -14,6 +14,7 @@ export interface AgentSession {
   agent: AgentKind;
   state: AttentionState;
   reason?: string;
+  preview?: string;
   confidence: Confidence;
   source: SessionSource;
   cwd?: string;
@@ -23,13 +24,14 @@ export interface AgentSession {
 
 export interface ExternalAgentEvent {
   sequence: number;
-  agent: Exclude<AgentKind, 'demo' | 'unknown'>;
+  agent: Exclude<AgentKind, 'unknown'>;
   eventType: string;
   externalSessionId?: string;
   targetWindowId?: string;
   cwd?: string;
   status?: string;
   reason?: string;
+  preview?: string;
   notificationType?: string;
   toolName?: string;
   timestamp: number;

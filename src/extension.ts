@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 import * as vscode from 'vscode';
-import { DemoAdapter } from './adapters/demo-adapter';
 import { BrokerClient } from './broker/client';
 import { shouldNotify } from './core/state-machine';
 import { SessionRegistry } from './core/session-registry';
@@ -43,8 +42,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     windowDescriptor.workspaceName,
   );
   discovery.initialize();
-  const demo = new DemoAdapter(registry, discovery);
-
   let mode = context.globalState.get<PresentationMode>('presentationMode', 'utility');
   let latestSessions: AgentSession[] = [];
   let broker: BrokerClient;
@@ -73,18 +70,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         );
       }
     },
-    startDemo: () => {
-      demo.start();
-      broker.publishNow();
-    },
-    advanceDemo: () => {
-      demo.advance();
-      broker.publishNow();
-    },
-    resetDemo: () => {
-      demo.reset();
-      broker.publishNow();
-    },
     toggleMode: () => {
       mode = mode === 'utility' ? 'garden' : 'utility';
       void context.globalState.update('presentationMode', mode);
@@ -96,7 +81,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider('agentGarden.panel', provider),
     discovery,
-    demo,
   );
 
   broker = new BrokerClient({
@@ -145,9 +129,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('agentGarden.open', async () => {
       await vscode.commands.executeCommand('workbench.view.extension.agentGarden');
     }),
-    vscode.commands.registerCommand('agentGarden.startDemo', () => demo.start()),
-    vscode.commands.registerCommand('agentGarden.advanceDemo', () => demo.advance()),
-    vscode.commands.registerCommand('agentGarden.resetDemo', () => demo.reset()),
     vscode.commands.registerCommand('agentGarden.toggleMode', () => {
       mode = mode === 'utility' ? 'garden' : 'utility';
       void context.globalState.update('presentationMode', mode);
