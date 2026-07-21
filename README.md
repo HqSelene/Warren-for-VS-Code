@@ -1,10 +1,26 @@
-# Warren for VS Code
+<p align="center">
+  <img src="docs/assets/warren-icon.png" alt="Warren rabbit mascot" width="104" />
+</p>
 
-**All your coding agents, at a glance.**
+<h1 align="center">Warren for VS Code</h1>
+
+<p align="center"><strong>All your coding agents, at a glance.</strong></p>
+
+<p align="center">
+  <a href="https://hqselene.github.io/Warren-for-VS-Code/">Website</a> ·
+  <a href="https://github.com/HqSelene/Warren-for-VS-Code/releases/tag/v0.0.1">Download v0.0.1</a> ·
+  <a href="https://github.com/HqSelene/Warren-for-VS-Code/blob/main/LICENSE">MIT License</a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/og.png" alt="Warren for VS Code — All your coding agents, at a glance" width="900" />
+</p>
 
 Warren is a cute always-on-top desktop companion for real CLI coding agents running across multiple VS Code windows. It shows what each Claude, GPT · Codex, or OpenCode session is doing, which one needs attention, and lets you jump back to the originating terminal.
 
-[Website](https://hqselene.github.io/Warren-for-VS-Code/) · [Latest release](https://github.com/HqSelene/Warren-for-VS-Code/releases/latest)
+<p align="center">
+  <img src="docs/assets/warren-app.png" alt="Warren monitoring Claude Code, Codex, and OpenCode sessions across VS Code workspaces" width="520" />
+</p>
 
 ## What it does
 
@@ -27,7 +43,7 @@ Requirements:
 - Desktop VS Code 1.125 or newer
 - At least one supported CLI: Claude Code, Codex, or OpenCode
 
-1. Download `Warren-Setup-0.0.1.exe` from the GitHub Releases page.
+1. Download `Warren-Setup-0.0.1.exe` from the [Warren v0.0.1 release page](https://github.com/HqSelene/Warren-for-VS-Code/releases/tag/v0.0.1).
 2. Run the installer once. If Windows SmartScreen appears, select **More info → Run anyway**.
 3. Warren automatically installs the desktop companion, VS Code bridge, and bundled Claude, Codex, and OpenCode adapters.
 4. Reload every open VS Code window.
@@ -42,20 +58,20 @@ Use this route if automatic VS Code bridge setup fails or when testing a develop
 
 ### 1. Install the VS Code bridge manually
 
-Download `agent-garden-0.0.1.vsix` from the GitHub Release assets. The filename retains the original internal package ID for upgrade compatibility, but it appears as **Warren** inside VS Code.
+Download `Warren-0.0.1.vsix` from the [Warren v0.0.1 release assets](https://github.com/HqSelene/Warren-for-VS-Code/releases/tag/v0.0.1). It appears as **Warren** inside VS Code.
 
 In VS Code:
 
 1. Open the Extensions view.
 2. Select the `...` menu.
 3. Choose **Install from VSIX...**.
-4. Select `agent-garden-0.0.1.vsix`.
+4. Select `Warren-0.0.1.vsix`.
 5. Run **Developer: Reload Window** in every open VS Code window.
 
 You can also install it from PowerShell:
 
 ```powershell
-code --install-extension .\agent-garden-0.0.1.vsix --force
+code --install-extension .\Warren-0.0.1.vsix --force
 ```
 
 ### 2. Install the agent adapters manually
