@@ -6,6 +6,8 @@ import {
   BrowserWindow,
   ipcMain,
   screen,
+  shell,
+  type Rectangle,
 } from 'electron';
 import { BrokerServer } from '../src/broker/server';
 import {
@@ -13,12 +15,15 @@ import {
   BROKER_PORT,
   BROKER_SERVICE,
 } from '../src/broker/protocol';
-import type { AgentSession, BrokerSnapshot, FocusRequest } from '../src/core/types';
+import type { AgentSession, BrokerSnapshot, FocusRequest, WindowDescriptor } from '../src/core/types';
+import { toVsCodeWorkspaceUrl } from '../src/core/vscode-uri';
 
-const FULL_WIDTH = 560;
-const FULL_HEIGHT = 620;
-const COMPACT_WIDTH = 520;
-const COMPACT_HEIGHT = 58;
+const FULL_WIDTH = 410;
+const FULL_HEIGHT = 420;
+const MIN_WIDTH = 330;
+const MIN_HEIGHT = 260;
+const COMPACT_WIDTH = 320;
+const COMPACT_HEIGHT = 48;
 const POLL_INTERVAL_MS = 700;
 
 let window: BrowserWindow | undefined;
@@ -26,7 +31,8 @@ let broker: BrokerServer | undefined;
 let pollTimer: NodeJS.Timeout | undefined;
 let compact = false;
 let quitting = false;
-let expandedHeight = FULL_HEIGHT;
+let expandedSize = { width: FULL_WIDTH, height: FULL_HEIGHT };
+let knownWindows = new Map<string, WindowDescriptor>();
 
 async function createWindow(): Promise<void> {
   const display = screen.getPrimaryDisplay().workArea;
@@ -44,11 +50,11 @@ async function createWindow(): Promise<void> {
     height: FULL_HEIGHT,
     x,
     y,
-    minWidth: COMPACT_WIDTH,
-    minHeight: COMPACT_HEIGHT,
+    minWidth: MIN_WIDTH,
+    minHeight: MIN_HEIGHT,
     frame: false,
     transparent: true,
-    resizable: false,
+    resizable: true,
     alwaysOnTop: true,
     show: false,
     backgroundColor: '#00000000',
@@ -64,6 +70,13 @@ async function createWindow(): Promise<void> {
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   window.once('ready-to-show', () => window?.show());
   await window.loadFile(path.join(rendererRoot, 'index.html'));
+  window.on('resize', () => {
+    if (!window || compact) {
+      return;
+    }
+    const bounds = window.getBounds();
+    expandedSize = { width: bounds.width, height: bounds.height };
+  });
   window.on('closed', () => { window = undefined; });
 }
 
@@ -89,6 +102,7 @@ async function poll(): Promise<void> {
   try {
     await ensureBroker();
     const snapshot = await requestJson<BrokerSnapshot>('GET', '/snapshot');
+    knownWindows = new Map(snapshot.windows.map((descriptor) => [descriptor.id, descriptor]));
     window?.webContents.send('garden:sessions', {
       connected: true,
       sessions: snapshot.sessions,
@@ -102,26 +116,41 @@ function setCompact(value: boolean): void {
   if (!window || compact === value) {
     return;
   }
-  compact = value;
   const current = window.getBounds();
-  const width = compact ? COMPACT_WIDTH : FULL_WIDTH;
-  const height = compact ? COMPACT_HEIGHT : expandedHeight;
-  if (current.width === width && current.height === height) {
-    window.webContents.send('garden:compact', compact);
-    return;
+  compact = value;
+  if (value) {
+    expandedSize = { width: current.width, height: current.height };
+    window.setMinimumSize(COMPACT_WIDTH, COMPACT_HEIGHT);
+    window.setResizable(false);
+    window.setBounds(anchoredBounds(current, COMPACT_WIDTH, COMPACT_HEIGHT), false);
+  } else {
+    window.setBounds(anchoredBounds(current, expandedSize.width, expandedSize.height), false);
+    window.setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
+    window.setResizable(true);
   }
-  window.setBounds({
-    x: current.x + current.width - width,
-    y: current.y + current.height - height,
+  window.webContents.send('garden:compact', compact);
+}
+
+function anchoredBounds(current: Rectangle, width: number, height: number): Rectangle {
+  const area = screen.getDisplayMatching(current).workArea;
+  const intendedX = current.x + current.width - width;
+  return {
+    x: Math.min(Math.max(intendedX, area.x), area.x + area.width - width),
+    y: Math.min(Math.max(current.y, area.y), area.y + area.height - height),
     width,
     height,
-  }, true);
-  window.webContents.send('garden:compact', compact);
+  };
 }
 
 app.whenReady().then(async () => {
   ipcMain.handle('garden:focus', async (_event, request: FocusRequest) => {
     await requestJson('POST', '/focus', request);
+    const workspaceUri = knownWindows.get(request.targetWindowId)?.workspaceUri;
+    const vscodeUrl = workspaceUri ? toVsCodeWorkspaceUrl(workspaceUri) : undefined;
+    if (vscodeUrl) {
+      window?.blur();
+      await shell.openExternal(vscodeUrl).catch(() => undefined);
+    }
   });
   ipcMain.on('garden:toggle-compact', () => setCompact(!compact));
   ipcMain.on('garden:minimize', () => window?.minimize());
@@ -132,26 +161,6 @@ app.whenReady().then(async () => {
   ipcMain.on('garden:set-pin', (_event, pinned: boolean) => {
     window?.setAlwaysOnTop(pinned, 'floating');
   });
-  ipcMain.on('garden:set-height', (_event, requestedHeight: number) => {
-    if (!window || !Number.isFinite(requestedHeight)) {
-      return;
-    }
-    const nextHeight = Math.max(360, Math.min(760, Math.round(requestedHeight)));
-    expandedHeight = nextHeight;
-    if (compact) {
-      return;
-    }
-    const current = window.getBounds();
-    if (current.height === nextHeight) {
-      return;
-    }
-    window.setBounds({
-      ...current,
-      y: current.y + current.height - nextHeight,
-      height: nextHeight,
-    }, true);
-  });
-
   await createWindow();
   if (process.env.AGENT_GARDEN_START_COMPACT === '1') {
     setCompact(true);
@@ -242,5 +251,9 @@ function visualFixture(): AgentSession[] {
     { ...base, sessionId: 'fixture-codex', terminalId: 'fixture-codex', windowId: 'window-a', workspaceName: 'SimArch', agent: 'codex', state: 'needsYou', reason: 'Permission: run pytest tests/ — allow command?', updatedAt: now - 5_000 },
     { ...base, sessionId: 'fixture-opencode', terminalId: 'fixture-opencode', windowId: 'window-b', workspaceName: 'Shopify', agent: 'opencode', state: 'done', preview: 'Fixed checkout flow — 3 files changed and regression tests added.', updatedAt: now - 240_000 },
     { ...base, sessionId: 'fixture-error', terminalId: 'fixture-error', windowId: 'window-c', workspaceName: 'KpopZoo', agent: 'claude', state: 'error', reason: "ModuleNotFoundError: no module named 'transformers'", updatedAt: now - 20_000 },
+    { ...base, sessionId: 'fixture-codex-work', terminalId: 'fixture-codex-work', windowId: 'window-b', workspaceName: 'Shopify', agent: 'codex', state: 'working', preview: 'Adding checkout regression coverage and updating fixtures.', updatedAt: now - 9_000 },
+    { ...base, sessionId: 'fixture-open-work', terminalId: 'fixture-open-work', windowId: 'window-a', workspaceName: 'SimArch', agent: 'opencode', state: 'working', preview: 'Reviewing the sensor data model and migration path.', updatedAt: now - 13_000 },
+    { ...base, sessionId: 'fixture-open-done', terminalId: 'fixture-open-done', windowId: 'window-c', workspaceName: 'KpopZoo', agent: 'opencode', state: 'done', preview: 'Updated the dataset loader and validation messages.', updatedAt: now - 360_000 },
+    { ...base, sessionId: 'fixture-claude-wait', terminalId: 'fixture-claude-wait', windowId: 'window-d', workspaceName: 'Docs', agent: 'claude', state: 'needsYou', reason: 'Choose which API example should be kept.', updatedAt: now - 4_000 },
   ];
 }

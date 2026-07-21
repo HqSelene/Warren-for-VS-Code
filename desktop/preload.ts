@@ -14,7 +14,6 @@ export interface AgentGardenDesktopApi {
   minimize: () => void;
   close: () => void;
   setPinned: (pinned: boolean) => void;
-  setHeight: (height: number) => void;
 }
 
 const api: AgentGardenDesktopApi = {
@@ -33,7 +32,6 @@ const api: AgentGardenDesktopApi = {
   minimize: () => ipcRenderer.send('garden:minimize'),
   close: () => ipcRenderer.send('garden:close'),
   setPinned: (pinned) => ipcRenderer.send('garden:set-pin', pinned),
-  setHeight: (height) => ipcRenderer.send('garden:set-height', height),
 };
 
 contextBridge.exposeInMainWorld('agentGarden', api);

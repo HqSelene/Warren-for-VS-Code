@@ -95,8 +95,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       provider.setSessions(latestSessions);
       updateStatusBar(statusBar, latestSessions);
     },
-    onFocusCommand: (command) => {
+    onFocusCommand: async (command) => {
       if (discovery.focus(command.terminalId)) {
+        await vscode.commands.executeCommand('workbench.action.terminal.focus');
         void vscode.window.showInformationMessage('Agent Garden focused the requested terminal.');
       }
     },

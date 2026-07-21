@@ -17,3 +17,4 @@
 - Added a real Codex lifecycle hook adapter for prompt, tool, permission, and completion events.
 - Replaced the visible Unknown state with Error; unconfirmed terminals stay hidden and ended sessions disappear.
 - Stabilized dynamic window sizing to prevent polling jitter and replaced the low collapse glyph with a centered right-pointing control.
+- Replaced automatic height growth with user resizing and internal scrolling, reduced the complete interface scale, removed persistent card highlighting, adopted the reference pet animations/colors, made the compact capsule draggable, and added target-workspace activation to click-to-focus.

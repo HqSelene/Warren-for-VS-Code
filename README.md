@@ -7,9 +7,10 @@ Agent Garden is a cute always-on-top desktop companion for real CLI coding agent
 - Aggregates real sessions from every active VS Code window.
 - Shows four states: Working, Needs You, Done, and Error.
 - Displays a whitespace-normalized, one-line preview of the latest user instruction, limited to 160 characters.
-- Uses animated CSS pets: working bounce, permission question, done breathing, and error shake.
-- Groups agents by workspace and focuses the original terminal when a card is selected.
-- Stays on top, can be unpinned, minimized, moved, or collapsed into a compact status capsule.
+- Uses compact animated CSS pets: typing wiggle, permission hop, sleeping `z`, error dizzy, blinking, and pulsing status dots.
+- Groups agents by workspace and activates the originating VS Code workspace and terminal when a card is selected.
+- Starts at 410×420, can be resized down to 330×260, and scrolls internally instead of growing when more agents appear.
+- Stays on top, can be unpinned or moved, and collapses into a draggable compact status capsule.
 - Removes a session immediately when its agent process or terminal ends.
 
 The desktop app and VS Code extensions communicate only through an in-memory HTTP broker bound to `127.0.0.1`. Full prompts, responses, tool inputs, terminal output, source code, and credentials are not persisted.

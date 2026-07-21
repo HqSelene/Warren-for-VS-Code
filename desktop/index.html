@@ -25,12 +25,13 @@
       <strong>Your agents will grow here</strong>
       <span>Start Claude, Codex, or OpenCode in a new VS Code terminal.</span>
     </section>
+    <span class="resize-grip" aria-hidden="true"></span>
   </main>
-  <button class="compact-bar" data-action="expand" title="Expand Agent Garden">
-    <span class="compact-brand"><i></i>Agent garden</span>
+  <div class="compact-bar">
+    <span class="compact-brand"><i></i><span class="compact-brand-label">Agent garden</span></span>
     <span id="compact-summary" class="compact-summary"></span>
-    <span class="direction-mark expand-mark" aria-hidden="true"></span>
-  </button>
+    <button class="compact-expand" data-action="expand" title="Expand Agent Garden" aria-label="Expand Agent Garden"><span class="direction-mark expand-mark" aria-hidden="true"></span></button>
+  </div>
   <script src="../out/desktop/renderer.js"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@ Agent Garden is a desktop companion and VS Code bridge that helps developers see
 ## Main Parts
 
 - VS Code extension: discovers relevant integrated terminals and provides in-editor status and navigation.
-- Desktop companion: an Electron, always-on-top, frameless floating window with workspace grouping, animated pets, terminal focus actions, and a collapsible status capsule.
+- Desktop companion: an Electron, always-on-top, frameless floating window with workspace grouping, compact animated pets, resizable fixed-size scrolling, target-workspace activation, and a draggable status capsule.
 - Agent adapters: official Claude Code Hooks, Codex lifecycle Hooks, and an OpenCode Plugin normalize real prompts, permissions, work, completion, and failure events.
 - Embedded loopback broker: the first active extension window owns a local-only broker and other windows connect as clients to aggregate sessions and route focus commands.
 - Presentation modes: a full pet dashboard and a compact status capsule, both limited to real detected sessions.
@@ -40,6 +40,7 @@ Agent Garden is a desktop companion and VS Code bridge that helps developers see
 - Build Week MVP implemented: installable TypeScript extension, four-state model, terminal discovery/focus, cross-window broker, Utility/Garden views, notifications, tests, and VSIX packaging.
 - Real Claude Code and OpenCode adapters implemented: local event bridges feed the loopback broker, route by VS Code window ID, bind by working directory/external session ID, drive confirmed states, and carry only a short user-instruction preview. Safe install/uninstall commands preserve a Claude settings backup.
 - Demo Mode removed; ended agent processes now disappear immediately, and real Claude/OpenCode sessions display a locally transported one-line user-instruction preview.
-- Electron desktop companion added with an always-on-top frameless window, CSS-drawn animated pets, workspace grouping, click-to-focus, dynamic sizing, and a compact status capsule.
+- Electron desktop companion added with an always-on-top frameless window, CSS-drawn animated pets, workspace grouping, click-to-focus, user-controlled sizing, internal scrolling, and a draggable compact status capsule.
 - Codex lifecycle adapter added from official user-level hooks, enabling real GPT · Codex prompt previews and Working/Needs You/Done states after hook trust approval.
 - Visible state model finalized as Working, Needs You, Done, and Error; unconfirmed name-only terminals remain hidden and ended processes are removed.
+- Desktop interaction refined around a 410×420 default and 330×260 minimum: cards highlight only on hover, reference animations are used at a smaller scale, additional agents scroll inside the window, the collapsed capsule remains draggable, and click-to-focus activates the target VS Code workspace before focusing its terminal.

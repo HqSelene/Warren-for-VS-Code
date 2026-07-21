@@ -20,7 +20,6 @@ interface AgentGardenDesktopApi {
   minimize: () => void;
   close: () => void;
   setPinned: (pinned: boolean) => void;
-  setHeight: (height: number) => void;
 }
 
 const api = (window as unknown as { agentGarden: AgentGardenDesktopApi }).agentGarden;
@@ -30,7 +29,6 @@ let sessions: AgentSession[] = [];
 let connected = false;
 let compact = false;
 let pinned = true;
-let lastRequestedHeight: number | undefined;
 
 const list = requiredElement('session-list');
 const empty = requiredElement('empty');
@@ -84,11 +82,6 @@ function render(): void {
   summary.textContent = `${sorted.length} agent${sorted.length === 1 ? '' : 's'} · ${counts.needsYou} needs you`;
   compactSummary.replaceChildren(...summaryPills(counts));
 
-  const height = Math.min(720, 112 + byWorkspace.size * 34 + sorted.length * 78 + (sorted.length === 0 ? 170 : 20));
-  if (height !== lastRequestedHeight) {
-    lastRequestedHeight = height;
-    api.setHeight(height);
-  }
 }
 
 function workspaceGroup(workspace: string, group: AgentSession[]): HTMLElement {
@@ -118,7 +111,7 @@ function sessionCard(session: AgentSession): HTMLElement {
   const pet = document.createElement('span');
   pet.className = `pet pet-${session.agent}`;
   pet.setAttribute('aria-hidden', 'true');
-  pet.innerHTML = '<i class="ear ear-left"></i><i class="ear ear-right"></i><i class="eye eye-left"></i><i class="eye eye-right"></i><i class="mouth"></i><b class="signal">?</b>';
+  pet.innerHTML = '<i class="ear ear-left"></i><i class="ear ear-right"></i><i class="eye eye-left"></i><i class="eye eye-right"></i><i class="mouth"></i><b class="signal">?</b><i class="sleep-mark sleep-one">z</i><i class="sleep-mark sleep-two">z</i>';
 
   const copy = document.createElement('span');
   copy.className = 'session-copy';
