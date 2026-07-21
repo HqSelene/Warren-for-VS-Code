@@ -55,11 +55,12 @@ async function installBundledIntegrations(): Promise<SetupResult> {
 
   try {
     const codeCli = await findCodeCli();
-    // `code.cmd` is a batch file. Calling it explicitly avoids cmd.exe
-    // stripping the leading quote when the VS Code install path contains
-    // spaces (for example, `F:\\Program Files\\Microsoft VS Code`).
-    const command = `call "${codeCli}" --install-extension "${vsixPath}" --force`;
-    await execFileAsync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', command], {
+    // `code.cmd` is a batch file. Pass it as a separate cmd.exe argument and
+    // use CALL so paths containing spaces are not re-parsed as commands.
+    await execFileAsync(process.env.ComSpec ?? 'cmd.exe', [
+      '/d', '/s', '/c', 'call', codeCli,
+      '--install-extension', vsixPath, '--force',
+    ], {
       windowsHide: true,
       timeout: 60_000,
     });
